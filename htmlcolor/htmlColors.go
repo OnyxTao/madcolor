@@ -58,7 +58,7 @@ func InventColor(minl int, maxl int) (color string) {
 	}
 	msg := fmt.Sprintf("#%02x%02x%02x", a, b, c)
 	// if Debug
-	fmt.Fprintf(os.Stderr, "invented hex color: %s\n", msg)
+	// _, _ = fmt.Fprintf(os.Stderr, "invented hex color: %s\n", msg)
 	//
 	return msg
 }

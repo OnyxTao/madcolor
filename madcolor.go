@@ -22,9 +22,9 @@ func main() {
 	for _, r := range FlagText {
 		_, _ = bw.WriteString("<span style=\"color:")
 		if FlagInventColor {
-			hex = htmlColor.InventColor(0, 3*160)
+			hex = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
 		} else {
-			colorName, hex = htmlColor.RandomColor(3 * 160)
+			colorName, hex = htmlColor.RandomColor(3 * FlagMaxBrightness)
 		}
 		_, _ = bw.WriteString(hex)
 		if FlagAntiColor {
