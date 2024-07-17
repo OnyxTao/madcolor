@@ -49,8 +49,8 @@ func initFlags() {
 	nFlags.IntVarP(&FlagMaxBrightness, "max", "", 160,
 		"maximum total brightness of any foreground color")
 
-	nFlags.IntVarP(&FlagMaxBrightness, "min", "", 0,
-		"maximum total brightness of any foreground color")
+	nFlags.IntVarP(&FlagMinBrightness, "min", "", 0,
+		"minimum total brightness of any foreground color")
 
 	nFlags.BoolVarP(&FlagSlow, "slow", "", false,
 		"Add some time between http calls (do not hammer server)")
@@ -65,7 +65,7 @@ func initFlags() {
 		false, "Display help message and usage information")
 
 	nFlags.BoolVarP(&FlagQuiet, "quiet", "q",
-		false, "Suppress log output to stdout and stderr (output still goes to logfile)")
+		true, "Suppress log output to stdout and stderr (output still goes to logfile)")
 
 	// program flags
 	nFlags.BoolVarP(&FlagAntiColor, "anti", "a", false,

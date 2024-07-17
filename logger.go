@@ -80,13 +80,13 @@ func initLog(lfName string) {
 	xLog.SetFlags(log.Ldate | log.Ltime | log.LUTC | log.Lshortfile)
 	xLog.SetOutput(io.MultiWriter(logWriters...))
 
-	logPath, err := filepath.Abs(xLogFile.Name())
+	// logPath, err := filepath.Abs(xLogFile.Name())
 	if nil != err {
 		safeLogPrintf("huh? could not resolve logfilename %s because %s",
 			xLogFile.Name(), err.Error())
 		myFatal()
 	}
-	safeLogPrintf("Logfile set to %s", logPath)
+	// safeLogPrintf("Logfile set to %s", logPath)
 
 }
 
