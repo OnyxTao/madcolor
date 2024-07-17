@@ -1,9 +1,10 @@
 package main
 
 import (
+	"bufio"
 	htmlcolors "madcolor/htmlcolor"
+	"madcolor/misc"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -12,23 +13,20 @@ func main() {
 	initFlags()
 	htmlcolors.HtmlColorsInitialize()
 
-	var sb strings.Builder
+	bw := bufio.NewWriter(os.Stdout)
+	defer misc.DeferError(bw.Flush)
 
-	sb.WriteString("<div>")
+	_, _ = bw.WriteString("<div>")
 	for _, r := range FlagText {
-		sb.WriteString("<span style=\"color:")
+		_, _ = bw.WriteString("<span style=\"color:")
 		colorName, hex := htmlcolors.RandomColor(3 * 160)
-		sb.WriteString(hex)
-		sb.WriteString(";\">")
-		sb.WriteRune(r)
-		sb.WriteString("</span>")
+		_, _ = bw.WriteString(hex)
+		_, _ = bw.WriteString(";\">")
+		_, _ = bw.WriteRune(r)
+		_, _ = bw.WriteString("</span>")
 		if FlagDebug && FlagVerbose {
 			xLog.Printf("char %c random color %s", r, colorName)
 		}
 	}
-	sb.WriteString("</div>\n")
-	_, err := os.Stdout.WriteString(sb.String())
-	if err != nil {
-		xLog.Printf("could not colorize [%s]\nbecause %s", FlagText, err.Error())
-	}
+	_, _ = bw.WriteString("</div>\n")
 }
