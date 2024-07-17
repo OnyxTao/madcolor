@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	htmlcolor "madcolor/htmlcolor"
+	htmlColor "madcolor/htmlcolor"
 	"madcolor/misc"
 	"os"
 )
@@ -11,7 +11,7 @@ func main() {
 	initLog("madcolor.log")
 	defer closeLog()
 	initFlags()
-	htmlcolor.HtmlColorsInitialize()
+	htmlColor.HtmlColorsInitialize()
 
 	bw := bufio.NewWriter(os.Stdout)
 	defer misc.DeferError(bw.Flush)
@@ -19,7 +19,7 @@ func main() {
 	_, _ = bw.WriteString("<div>")
 	for _, r := range FlagText {
 		_, _ = bw.WriteString("<span style=\"color:")
-		colorName, hex := htmlcolors.RandomColor(3 * 160)
+		colorName, hex := htmlColor.RandomColor(3 * 160)
 		_, _ = bw.WriteString(hex)
 		_, _ = bw.WriteString(";\">")
 		_, _ = bw.WriteRune(r)
