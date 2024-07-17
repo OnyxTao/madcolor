@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	htmlcolors "madcolor/htmlcolor"
+	htmlcolor "madcolor/htmlcolor"
 	"madcolor/misc"
 	"os"
 )
@@ -11,7 +11,7 @@ func main() {
 	initLog("madcolor.log")
 	defer closeLog()
 	initFlags()
-	htmlcolors.HtmlColorsInitialize()
+	htmlcolor.HtmlColorsInitialize()
 
 	bw := bufio.NewWriter(os.Stdout)
 	defer misc.DeferError(bw.Flush)
