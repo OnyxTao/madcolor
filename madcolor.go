@@ -17,10 +17,20 @@ func main() {
 	defer misc.DeferError(bw.Flush)
 
 	_, _ = bw.WriteString("<div>")
+	hex := "#00000"
+	colorName := "random"
 	for _, r := range FlagText {
 		_, _ = bw.WriteString("<span style=\"color:")
-		colorName, hex := htmlColor.RandomColor(3 * 160)
+		if FlagInventColor {
+			hex = htmlColor.InventColor(0, 3*160)
+		} else {
+			colorName, hex = htmlColor.RandomColor(3 * 160)
+		}
 		_, _ = bw.WriteString(hex)
+		if FlagAntiColor {
+			_, _ = bw.WriteString("; background-color: ")
+			_, _ = bw.WriteString(htmlColor.AntiColor(hex))
+		}
 		_, _ = bw.WriteString(";\">")
 		_, _ = bw.WriteRune(r)
 		_, _ = bw.WriteString("</span>")

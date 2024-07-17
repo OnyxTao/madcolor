@@ -20,6 +20,8 @@ var nFlags *pflag.FlagSet
 
 /* secret flags */
 var FlagSlow bool
+var FlagMaxBrightness int
+var FlagMinBrightness int
 
 /* standard flags */
 
@@ -30,6 +32,8 @@ var FlagDebug bool
 
 /* program flags */
 var FlagText string
+var FlagInventColor bool
+var FlagAntiColor bool
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -42,6 +46,12 @@ func initFlags() {
 	nFlags.SetNormalizeFunc(wordSepNormalizeFunc)
 
 	// secret flags
+	nFlags.IntVarP(&FlagMaxBrightness, "max", "", 160,
+		"maximum total brightness of any foreground color")
+
+	nFlags.IntVarP(&FlagMaxBrightness, "min", "", 0,
+		"maximum total brightness of any foreground color")
+
 	nFlags.BoolVarP(&FlagSlow, "slow", "", false,
 		"Add some time between http calls (do not hammer server)")
 
@@ -58,6 +68,11 @@ func initFlags() {
 		false, "Suppress log output to stdout and stderr (output still goes to logfile)")
 
 	// program flags
+	nFlags.BoolVarP(&FlagAntiColor, "anti", "a", false,
+		"Set the colorspace background to the foreground complement")
+
+	nFlags.BoolVarP(&FlagInventColor, "invent", "i", false,
+		"randomly generate colors (rather than randomly select websafe colors)")
 
 	nFlags.StringVarP(&FlagText, "text", "t",
 		"", "Text to colorize")
