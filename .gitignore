@@ -1,0 +1,15 @@
+/.
+/htmlcolor/
+/htmlcolor/htmlColors.go
+/misc/
+/misc/misc.go
+/.gitignore
+/config.go
+/filerw.go
+/GetLocations.log
+/go.mod
+/go.txt
+/logger.go
+/madcolor.go
+/madcolor.log
+/readme.md

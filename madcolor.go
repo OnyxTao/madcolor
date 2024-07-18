@@ -96,7 +96,7 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 
 	var r rune
 	var err error
-	for r, _, err = in.ReadRune(); err != nil; r, _, err = in.ReadRune() {
+	for r, _, err = in.ReadRune(); err == nil; r, _, err = in.ReadRune() {
 		_, _ = bw.WriteString("<span style=\"color:")
 		if FlagInventColor {
 			hex = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)

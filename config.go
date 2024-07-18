@@ -52,7 +52,7 @@ func initFlags() {
 	// secret flags
 	nFlags.StringVarP(&FlagOutputDir, "output-dir", "", "",
 		"output directory for output file")
-	hideFlags["FlagOutputDir"] = "output-dir"
+	// hideFlags["FlagOutputDir"] = "output-dir"
 
 	// standard flags
 
@@ -86,10 +86,12 @@ func initFlags() {
 
 	nFlags.StringVarP(&FlagText, "text", "t",
 		"", "Text to colorize")
+
 	nFlags.StringVarP(&FlagInput, "input", "i",
 		"", "Input file to colorize, defaults to stdin")
-	nFlags.StringVarP(&FlagText, "text", "t",
-		"", "Output file to colorize, default to stdout")
+
+	nFlags.StringVarP(&FlagOutput, "output", "o",
+		"", "Input file to colorize, defaults to --text default string")
 
 	for flagName, optName := range hideFlags {
 		err = nFlags.MarkHidden(optName)
@@ -136,7 +138,7 @@ func initFlags() {
 				misc.ConcatenateErrors(err1, err2).Error())
 		}
 		UsageMessage()
-		_, _ = fmt.Fprintf(os.Stdout, "\t please see USAGE.MD for ")
+		_, _ = fmt.Fprintf(os.Stdout, "\t please see USAGE.MD for details")
 		myFatal(0)
 	}
 
