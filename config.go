@@ -35,6 +35,7 @@ var FlagText string
 var FlagInventColor bool
 var FlagAntiColor bool
 var FlagOutput string
+var FlagOutputDir string
 var FlagInput string
 
 // initFlags initializes the command line flags for the program.
@@ -42,17 +43,18 @@ var FlagInput string
 func initFlags() {
 	var err error
 
+	// [output-name][opt-name]
 	hideFlags := make(map[string]string, 8)
 
 	nFlags = pflag.NewFlagSet("default", pflag.ContinueOnError)
 	nFlags.SetNormalizeFunc(wordSepNormalizeFunc)
 
 	// secret flags
-	nFlags.IntVarP(&FlagMaxBrightness, "max", "", 160,
-		"maximum total brightness of any foreground color")
+	nFlags.StringVarP(&FlagOutputDir, "output-dir", "", "",
+		"output directory for output file")
+	hideFlags["FlagOutputDir"] = "output-dir"
 
-	nFlags.IntVarP(&FlagMinBrightness, "min", "", 0,
-		"minimum total brightness of any foreground color")
+	// standard flags
 
 	nFlags.BoolVarP(&FlagSlow, "slow", "", false,
 		"Add some time between http calls (do not hammer server)")
@@ -70,6 +72,12 @@ func initFlags() {
 		true, "Suppress log output to stdout and stderr (output still goes to logfile)")
 
 	// program flags
+	nFlags.IntVarP(&FlagMaxBrightness, "max", "", 160,
+		"maximum total brightness of any foreground color")
+
+	nFlags.IntVarP(&FlagMinBrightness, "min", "", 0,
+		"minimum total brightness of any foreground color")
+
 	nFlags.BoolVarP(&FlagAntiColor, "anti", "a", false,
 		"Set the colorspace background to the foreground complement")
 
