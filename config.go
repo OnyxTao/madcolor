@@ -34,6 +34,8 @@ var FlagDebug bool
 var FlagText string
 var FlagInventColor bool
 var FlagAntiColor bool
+var FlagOutput string
+var FlagInput string
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -71,11 +73,15 @@ func initFlags() {
 	nFlags.BoolVarP(&FlagAntiColor, "anti", "a", false,
 		"Set the colorspace background to the foreground complement")
 
-	nFlags.BoolVarP(&FlagInventColor, "invent", "i", false,
+	nFlags.BoolVarP(&FlagInventColor, "invent", "I", false,
 		"randomly generate colors (rather than randomly select websafe colors)")
 
 	nFlags.StringVarP(&FlagText, "text", "t",
 		"", "Text to colorize")
+	nFlags.StringVarP(&FlagInput, "input", "i",
+		"", "Input file to colorize, defaults to stdin")
+	nFlags.StringVarP(&FlagText, "text", "t",
+		"", "Output file to colorize, default to stdout")
 
 	for flagName, optName := range hideFlags {
 		err = nFlags.MarkHidden(optName)

@@ -6,9 +6,19 @@ to show up against white). Currently, this is an arbitrary
 limit. Writes a &lt;div&gt; with the colorized text to STDOUT.
 
 Unless `--invent` is specified, the random colors are selected
-from a preexisting list of HTML colors.
+from a preexisting list of HTML colors (presently the websafe
+colors &amp; PANTONE colors-of-the-year approximations)
 
-Create a logfile `madcolor.log` in the working directory.
+Create a logfile `madcolor.log` in the working directory; all error
+and verbose information is written to stderr and the logfile. `--quiet`
+suppresses this output to stderr (it does not suppress logfile output).
+
+This program refers to **brightness** in several parameters. This is
+a rough measure of the luminance of any particular color as the average 
+of the values of red, green, and blue. For a color RGB(a,b,c), the brightness
+would be:
+<div style="text-align: center;">
+<span style="font-size: 150%; font-family: 'JetBrains Mono', monospace; color: navy; background-color: beige; padding: 10px; display: inline-block;"><sup>(a+b+c)</sup>&frasl;<sub>3</sub></span></div>
 
 ## USAGE
 madcolor --text "randomly color a string"
@@ -32,6 +42,7 @@ will (and should) differ.
 * Create an external colorlist option?
   * Check for madcolor.csv?
 * force color of whitespace (default white)?
+* read input file?
 
 ## FLAGS
 
@@ -45,11 +56,24 @@ Enable debug logic.
 Help message and usage. Flags are explained, other notes might be
 present.
 
-#### -i, --invent
-Invent colors, between a minimum/maximum total brightness
+#### -i, --input
+Input file to read 
+
+#### -I, --invent
+Invent colors, between minimum/maximum total brightness
+
+#### --min
+Set minimum brightness (default 0) for output colors.
+
+### --max
+Set maximum brightness (default 160) for output colors.
+
+#### -o, --output
+Write output to a file instead of stdout
 
 #### -q, --quiet
-Send debugging / verbose text to the logfile 
+By default, debug / verbose output goes to both stderr and the logfile;
+this flag suppresses output to logfile.
 
 #### -t, --text 
 Supply a string to decorate. Otherwise, the default string is decorated and returned.
