@@ -10,7 +10,8 @@ import (
 	"strings"
 )
 
-const MINCOLORDISTANCE float64 = 10.5
+const MINCOLORDISTANCE float64 = 20.5
+const MINLUMINANCEDISTANCE = 30
 
 // main runs the colorize program.
 // It initializes the log file, closes it when done,
@@ -113,18 +114,19 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 
 		if FlagAntiColor {
 			var antiColor string
-			var colorDistance float64
+			var cd float64
+			var ld int
 			antiColor = htmlColor.AntiColor(hex)
-			for colorDistance = htmlColor.ColorDistance(hex, antiColor); colorDistance <= MINCOLORDISTANCE; colorDistance = htmlColor.ColorDistance(hex, antiColor) {
+			for cd, ld = htmlColor.ColorDistance(hex, antiColor); cd < MINCOLORDISTANCE || ld < MINLUMINANCEDISTANCE; cd, ld = htmlColor.ColorDistance(hex, antiColor) {
 				oldAntiColor := antiColor
 				antiColor = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
 				if FlagDebug {
-					xLog.Printf("%f distance from %s to %s too small new background color %s",
-						colorDistance, hex, oldAntiColor, antiColor)
+					xLog.Printf("%3d %f luminance, distance from %s to %s too small new background color %s",
+						ld, cd, hex, oldAntiColor, antiColor)
 				}
 			}
 			if FlagDebug {
-				xLog.Printf("%f distance from %s to %s", colorDistance, hex, antiColor)
+				xLog.Printf("%c %f distance from %s to %s", r, cd, hex, antiColor)
 			}
 			_, _ = bw.WriteString(";padding: 1px 0px 1px 0px; background-color: ")
 			_, _ = bw.WriteString(antiColor)

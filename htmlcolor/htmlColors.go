@@ -105,13 +105,21 @@ func getRGB(hex string) (r, g, b int) {
 	return hexByteToInt(hex[1:3]), hexByteToInt(hex[3:5]), hexByteToInt(hex[5:7])
 }
 
-func ColorDistance(a string, b string) float64 {
+func ColorDistance(a string, b string) (dist float64, luminanceDist int) {
 	aRed, aGreen, aBlue := getRGB(a)
 	bRed, bGreen, bBlue := getRGB(b)
-	return math.Sqrt(
+
+	luminanceDist = aRed + aGreen + aBlue - (bRed + bGreen + bBlue)
+	if luminanceDist < 0 {
+		luminanceDist = -luminanceDist
+	}
+
+	dist = math.Sqrt(
 		math.Pow(float64(aRed-bRed), 2.0) +
 			math.Pow(float64(aGreen-bGreen), 2.0) +
 			math.Pow(float64(aBlue-bBlue), 2.0))
+
+	return dist, luminanceDist
 
 }
 
