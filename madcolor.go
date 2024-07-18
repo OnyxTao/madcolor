@@ -115,7 +115,7 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 			xLog.Printf("char %c random color %s", r, colorName)
 		}
 	}
-	if err != io.EOF {
+	if nil != err && err != io.EOF {
 		xLog.Printf("Failed to write colorized string to output because %s", err.Error())
 		myFatal()
 	}
