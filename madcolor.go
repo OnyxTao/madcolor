@@ -100,7 +100,7 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 	colorName := "random"
 
 	for r, _, err = in.ReadRune(); err == nil; r, _, err = in.ReadRune() {
-		_, _ = bw.WriteString("<span style=\"color:")
+		_, _ = bw.WriteString("<span style=\"color: ")
 
 		if FlagInventColor {
 			hex = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
@@ -118,6 +118,8 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 						colorDistance, hex, oldAntiColor, antiColor)
 				}
 			}
+			_, _ = bw.WriteString(";padding: 1px 0px 1px 0px; background-color: ")
+			_, _ = bw.WriteString(antiColor)
 		}
 		_, _ = bw.WriteString(";\">")
 		_, _ = bw.WriteRune(r)
