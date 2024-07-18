@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+const MINCOLORDISTANCE float64 = 10.5
+
 // main runs the colorize program.
 // It initializes the log file, closes it when done,
 // initializes the command line flags, initializes and
@@ -108,15 +110,21 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 			colorName, hex = htmlColor.RandomColor(3 * FlagMaxBrightness)
 		}
 		_, _ = bw.WriteString(hex)
+
 		if FlagAntiColor {
-			antiColor := htmlColor.AntiColor(hex)
-			for colorDistance := htmlColor.ColorDistance(hex, antiColor); colorDistance <= 15.0; colorDistance = htmlColor.ColorDistance(hex, antiColor) {
+			var antiColor string
+			var colorDistance float64
+			antiColor = htmlColor.AntiColor(hex)
+			for colorDistance = htmlColor.ColorDistance(hex, antiColor); colorDistance <= MINCOLORDISTANCE; colorDistance = htmlColor.ColorDistance(hex, antiColor) {
 				oldAntiColor := antiColor
 				antiColor = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
 				if FlagDebug {
 					xLog.Printf("%f distance from %s to %s too small new background color %s",
 						colorDistance, hex, oldAntiColor, antiColor)
 				}
+			}
+			if FlagDebug {
+				xLog.Printf("%f distance from %s to %s", colorDistance, hex, antiColor)
 			}
 			_, _ = bw.WriteString(";padding: 1px 0px 1px 0px; background-color: ")
 			_, _ = bw.WriteString(antiColor)
