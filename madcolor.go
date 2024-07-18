@@ -90,12 +90,13 @@ func getInput() (br *bufio.Reader) {
 // The function assumes that the input rune stream is provided by the bufio.Reader and the colorized output
 // should be written to the bufio.Writer.
 func colorize(in *bufio.Reader, bw *bufio.Writer) {
+	var r rune
+	var err error = nil
+
 	_, _ = bw.WriteString("<div>")
 	hex := "#00000"
 	colorName := "random"
 
-	var r rune
-	var err error
 	for r, _, err = in.ReadRune(); err == nil; r, _, err = in.ReadRune() {
 		_, _ = bw.WriteString("<span style=\"color:")
 		if FlagInventColor {
@@ -115,7 +116,7 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 			xLog.Printf("char %c random color %s", r, colorName)
 		}
 	}
-	if nil != err && err != io.EOF {
+	if err != io.EOF {
 		xLog.Printf("Failed to write colorized string to output because %s", err.Error())
 		myFatal()
 	}
