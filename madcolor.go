@@ -36,11 +36,13 @@ func main() {
 }
 
 // getOutput returns a *os.File that represents the output destination.
-// If the `FlagOutput` variable is set, `getOutput` creates a file with the specified
-// name in the directory specified by `FlagOutputDir` and returns it. If opening the
-// file encounters an error, it logs the error message using `xLog.Printf` and calls
-// `myFatal` to exit the program. If the `FlagOutput` variable is not set, `getOutput`
-// returns `os.Stdout`.
+// If the `FlagOutput` variable is set, `getOutput` creates a file with
+// the specified // name in the directory specified by `FlagOutputDir`
+// and returns it. If opening the file encounters an error, it logs the
+// error message using `xLog.Printf` and calls `myFatal` to exit the
+// program. If the `FlagOutput` variable is not set, `getOutput` returns
+// `os.Stdout`. It does not return a buffered writer, because there would be
+// no way to close the underlying file.
 func getOutput() (f *os.File) {
 	var fn string
 	var err error
@@ -48,7 +50,7 @@ func getOutput() (f *os.File) {
 		fn = path.Join(FlagOutputDir, FlagOutput)
 		f, err = os.Create(fn)
 		if err != nil {
-			xLog.Printf("Could not open %s because %s", &fn, err.Error())
+			xLog.Printf("Could not open %s because %s", fn, err.Error())
 			myFatal()
 		}
 	} else {
@@ -99,6 +101,7 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 
 	for r, _, err = in.ReadRune(); err == nil; r, _, err = in.ReadRune() {
 		_, _ = bw.WriteString("<span style=\"color:")
+
 		if FlagInventColor {
 			hex = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
 		} else {
@@ -106,8 +109,15 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 		}
 		_, _ = bw.WriteString(hex)
 		if FlagAntiColor {
-			_, _ = bw.WriteString("; background-color: ")
-			_, _ = bw.WriteString(htmlColor.AntiColor(hex))
+			antiColor := htmlColor.AntiColor(hex)
+			for colorDistance := htmlColor.ColorDistance(hex, antiColor); colorDistance <= 15.0; colorDistance = htmlColor.ColorDistance(hex, antiColor) {
+				oldAntiColor := antiColor
+				antiColor = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
+				if FlagDebug {
+					xLog.Printf("%f distance from %s to %s too small new background color %s",
+						colorDistance, hex, oldAntiColor, antiColor)
+				}
+			}
 		}
 		_, _ = bw.WriteString(";\">")
 		_, _ = bw.WriteRune(r)

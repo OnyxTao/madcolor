@@ -2,6 +2,7 @@ package htmlcolors
 
 import (
 	"fmt"
+	"math"
 	"math/rand/v2"
 	"os"
 	"regexp"
@@ -95,6 +96,23 @@ func hexByteToInt(hex string) (val int) {
 		panic(msg)
 	}
 	return int(i)
+}
+
+func getRGB(hex string) (r, g, b int) {
+	if !rxHex.MatchString(hex) {
+		panic("invalid hex format: [" + hex + "] (don't do that!)")
+	}
+	return hexByteToInt(hex[1:3]), hexByteToInt(hex[3:5]), hexByteToInt(hex[5:7])
+}
+
+func ColorDistance(a string, b string) float64 {
+	aRed, aGreen, aBlue := getRGB(a)
+	bRed, bGreen, bBlue := getRGB(b)
+	return math.Sqrt(
+		math.Pow(float64(aRed-bRed), 2.0) +
+			math.Pow(float64(aGreen-bGreen), 2.0) +
+			math.Pow(float64(aBlue-bBlue), 2.0))
+
 }
 
 func RandomColor(mb ...int) (name string, hex string) {
