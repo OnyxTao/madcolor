@@ -81,8 +81,7 @@ func Initialize() {
 //	fmt.Println(rl) // Output: 1.0
 func relativeLuminance(rgb ...uint8) (rl float64) {
 	var RGB [3]float64
-	// https://www.omnicalculator.com/other/contrast-ratio#
-	//   how-do-i-calculate-the-color-contrast-ratio-between-two-colors
+	// https://www.omnicalculator.com/other/contrast-ratio#how-do-i-calculate-the-color-contrast-ratio-between-two-colors
 	if len(rgb) != 3 {
 		msg := fmt.Sprintf("missized slice passed to sRGBrl (len != 3) len == %d", len(rgb))
 		panic(msg)
@@ -99,7 +98,7 @@ func relativeLuminance(rgb ...uint8) (rl float64) {
 		RGB[ix] = a
 	}
 
-	return (0.2126 * RGB[0]) + (0.7152 * RGB[1]) + (0.0722 * RGB[2])
+	return ((0.2126 * RGB[0]) + (0.7152 * RGB[1]) + (0.0722 * RGB[2]))
 }
 
 func InventColor(minl int, maxl int) (color string) {

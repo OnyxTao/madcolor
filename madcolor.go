@@ -10,8 +10,9 @@ import (
 	"strings"
 )
 
-const MINCOLORDISTANCE float64 = 50.0
-const MINCONTRAST float64 = 6.0
+// very tweaky values, colordistance 85 / contrast 0.36
+const MINCOLORDISTANCE float64 = 85.0
+const MINCONTRAST float64 = 0.36
 
 // main runs the colorize program.
 // It initializes the log file, closes it when done,
@@ -97,32 +98,48 @@ func getInput() (br *bufio.Reader) {
 func colorize(in *bufio.Reader, bw *bufio.Writer) {
 	var r rune
 	var err error = nil
+	var antiColor string
 
 	_, _ = bw.WriteString("<div>")
-	hex := "#00000"
-	colorName := "random"
+
+	colorName, hex := htmlColor.RandomColor(3 * FlagMaxBrightness)
+	_, antiColor = htmlColor.RandomColor(3 * FlagMaxBrightness)
 
 	for r, _, err = in.ReadRune(); err == nil; r, _, err = in.ReadRune() {
+
 		_, _ = bw.WriteString("<span style=\"color: ")
 
 		if FlagInventColor {
 			hex = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
+		} else if FlagDrift {
+			hex = antiColor
 		} else {
 			colorName, hex = htmlColor.RandomColor(3 * FlagMaxBrightness)
 		}
 		_, _ = bw.WriteString(hex)
 
-		if FlagAntiColor {
+		if FlagAntiColor || FlagDrift {
 			var cnt = 0
-			var antiColor string
 			var cd float64
 			var ccr float64
-			antiColor = htmlColor.AntiColor(hex)
+			if FlagDrift && !FlagInventColor {
+				_, antiColor = htmlColor.RandomColor(3 * FlagMaxBrightness)
+			} else {
+				antiColor = htmlColor.AntiColor(hex)
+			}
+
 			cd, ccr = htmlColor.ColorDistance(hex, antiColor)
 			// check contrast & color differentiation
-			for (cd < MINCOLORDISTANCE || ccr < MINCONTRAST) && cnt < 100 {
+
+			for (cd < MINCOLORDISTANCE || ccr < MINCONTRAST) && cnt < 500 {
+				xLog.Printf("%s vs %s: cd: %12f  ccr: %13f",
+					hex, antiColor, cd, ccr)
 				// if not enough contrast, try again ...
-				antiColor = htmlColor.InventColor(FlagMinBrightness, FlagMaxBrightness)
+				if FlagInventColor {
+					antiColor = htmlColor.InventColor(FlagMinBrightness, FlagMaxBrightness)
+				} else {
+					_, antiColor = htmlColor.RandomColor()
+				}
 				cd, ccr = htmlColor.ColorDistance(hex, antiColor)
 				// but not forever!
 				cnt++

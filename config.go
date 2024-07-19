@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+const DEFAULTCOLORTEXT = "We promptly judged antique ivory buckles for the next prize !@#$%^*(){}[];:.,?"
+
 // wordSepNormalizeFunc all options are lowercase, so
 // ... lowercase they shall be
 func wordSepNormalizeFunc(_ *pflag.FlagSet, name string) pflag.NormalizedName {
@@ -37,6 +39,7 @@ var FlagAntiColor bool
 var FlagOutput string
 var FlagOutputDir string
 var FlagInput string
+var FlagDrift bool
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -72,6 +75,9 @@ func initFlags() {
 		true, "Suppress log output to stdout and stderr (output still goes to logfile)")
 
 	// program flags
+	nFlags.BoolVarP(&FlagDrift, "drift", "", false,
+		"Drift mode uses the previous background as the new foreground")
+
 	nFlags.IntVarP(&FlagMaxBrightness, "max", "", 160,
 		"maximum total brightness of any foreground color")
 
@@ -85,7 +91,7 @@ func initFlags() {
 		"randomly generate colors (rather than randomly select websafe colors)")
 
 	nFlags.StringVarP(&FlagText, "text", "t",
-		"", "Text to colorize")
+		DEFAULTCOLORTEXT, "Text to colorize")
 
 	nFlags.StringVarP(&FlagInput, "input", "i",
 		"", "Input file to colorize, defaults to stdin")
