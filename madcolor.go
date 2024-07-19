@@ -86,15 +86,26 @@ func getInput() (br *bufio.Reader) {
 	return br
 }
 
-// colorize performs colorization on input runes and writes the colorized output to the provided bufio.Writer.
-// It starts the colorization with the "<div>" tag and ends it with the "</div>\n" tag.
-// For each input rune, it generates a random color or invents a color based on the provided flags.
-// The color and anti-color (if FlagAntiColor is true) are applied to the corresponding span tags.
-// Each span tag encloses a single input rune.
-// If FlagDebug and FlagVerbose are both true, it logs the character and the randomly generated color.
-// If there is an error while writing to the output, it logs the error and calls myFatal to exit the program.
-// The function assumes that the input rune stream is provided by the bufio.Reader and the colorized output
-// should be written to the bufio.Writer.
+// colorize applies colors to characters read from the input reader
+// and writes the colorized output to the output writer. It generates
+// a random color and its hexadecimal representation using
+// htmlColor.RandomColor. If FlagInventColor is set, it
+// generates an invented color in the specified brightness range using
+// htmlColor.InventColor. If the FlagDrift is set, it uses the
+// antiColor generated in the previous iteration. Otherwise, it
+// generates a new random color and its hexadecimal representation.
+// If the FlagAntiColor is set, it generates an antiColor using
+// htmlColor.AntiColor and checks the contrast and color differentiation.
+// If the generated antiColor does not have enough contrast or color
+// differentiation, it generates a new one. The function writes the color
+// span tag and the colorized character to the output writer. If FlagDebug
+// and FlagVerbose are set, it logs the random color for each character.
+// The function stops reading if it encounters an error other than io.EOF
+// and logs the error.
+//
+// Parameters:
+// - in: the input reader from which characters are read
+// - bw: the output writer to which colorized output is written
 func colorize(in *bufio.Reader, bw *bufio.Writer) {
 	var r rune
 	var err error = nil
