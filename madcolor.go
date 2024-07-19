@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-const MINCOLORDISTANCE float64 = 20.5
-const MINLUMINANCEDISTANCE = 30
+const MINCOLORDISTANCE float64 = 50.0
+const MINCONTRAST float64 = 6.0
 
 // main runs the colorize program.
 // It initializes the log file, closes it when done,
@@ -26,7 +26,7 @@ func main() {
 	initLog("madcolor.log")
 	defer closeLog()
 	initFlags()
-	htmlColor.HtmlColorsInitialize()
+	htmlColor.Initialize()
 
 	br = getInput()
 
@@ -113,20 +113,24 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 		_, _ = bw.WriteString(hex)
 
 		if FlagAntiColor {
+			var cnt = 0
 			var antiColor string
 			var cd float64
-			var ld int
+			var ccr float64
 			antiColor = htmlColor.AntiColor(hex)
-			for cd, ld = htmlColor.ColorDistance(hex, antiColor); cd < MINCOLORDISTANCE || ld < MINLUMINANCEDISTANCE; cd, ld = htmlColor.ColorDistance(hex, antiColor) {
-				oldAntiColor := antiColor
-				antiColor = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
-				if FlagDebug {
-					xLog.Printf("%3d %f luminance, distance from %s to %s too small new background color %s",
-						ld, cd, hex, oldAntiColor, antiColor)
-				}
+			cd, ccr = htmlColor.ColorDistance(hex, antiColor)
+			// check contrast & color differentiation
+			for (cd < MINCOLORDISTANCE || ccr < MINCONTRAST) && cnt < 100 {
+				// if not enough contrast, try again ...
+				antiColor = htmlColor.InventColor(FlagMinBrightness, FlagMaxBrightness)
+				cd, ccr = htmlColor.ColorDistance(hex, antiColor)
+				// but not forever!
+				cnt++
 			}
-			if FlagDebug {
-				xLog.Printf("%c %f distance from %s to %s", r, cd, hex, antiColor)
+			if cnt >= 100 {
+				xLog.Printf(
+					"huh? Could not get a good contrasting color for %s %s (tried %d times!)",
+					colorName, hex, cnt)
 			}
 			_, _ = bw.WriteString(";padding: 1px 0px 1px 0px; background-color: ")
 			_, _ = bw.WriteString(antiColor)
