@@ -55,7 +55,7 @@ will (and should) differ.
     * Hex color identifier: `#[a-fA-F0-9]{6}` (don't bother with three-hex-digit colors)
     * color name: "aliceblue", case ignored
 * ~~copy to clipboard~~
-  * Done `--paste`
+  * Done `--nopaste` will disable
 * Suppress output to stdout if writing to a file or clipboard
 
 ## FLAGS

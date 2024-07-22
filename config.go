@@ -76,8 +76,8 @@ func initFlags() {
 		true, "Suppress log output to stdout and stderr (output still goes to logfile)")
 
 	// program flags
-	nFlags.BoolVarP(&FlagClip, "paste", "p", false,
-		"Paste buffer to clipboard (if clipboard is available)")
+	nFlags.BoolVarP(&FlagClip, "nopaste", "", true,
+		"Suppress paste of buffer to clipboard (if clipboard is available)")
 
 	nFlags.BoolVarP(&FlagDrift, "drift", "", false,
 		"Drift mode uses the previous background as the new foreground")
@@ -133,8 +133,10 @@ func initFlags() {
 	}
 
 	if FlagClip && !modeClipboardAvailable {
-		xLog.Printf("This system does not offer a clipboard to paste to! --paste disabled!")
-		err = nFlags.Set("paste", "false")
+		if FlagVerbose {
+			xLog.Printf("This system does not offer a clipboard to paste to! --nopaste enabled!")
+		}
+		err = nFlags.Set("nopaste", "false")
 		if nil != err {
 			xLog.Printf("huh? Could not disable FlagClip (paste to clipboard) because %s\n", err.Error())
 			myFatal()
