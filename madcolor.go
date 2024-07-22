@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+const MAXATTEMPTS = 100
+
 // very tweaky values, colordistance 85 / contrast 0.36
 const MINCOLORDISTANCE float64 = 85.0
 const MINCONTRAST float64 = 0.36
@@ -79,11 +81,9 @@ func getInput() (br *bufio.Reader) {
 			xLog.Printf("Could not open %s because %s", &FlagInput, err.Error())
 			myFatal()
 		}
-		br = bufio.NewReader(f)
-	} else {
-		br = bufio.NewReader(strings.NewReader(FlagText))
+		return bufio.NewReader(f)
 	}
-	return br
+	return bufio.NewReader(strings.NewReader(FlagText))
 }
 
 // colorize applies colors to characters read from the input reader
@@ -105,20 +105,20 @@ func getInput() (br *bufio.Reader) {
 //
 // Parameters:
 // - in: the input reader from which characters are read
-// - bw: the output writer to which colorized output is written
-func colorize(in *bufio.Reader, bw *bufio.Writer) {
+// - out: the output writer to which colorized output is written
+func colorize(in *bufio.Reader, out *bufio.Writer) {
 	var r rune
 	var err error = nil
 	var antiColor string
 
-	_, _ = bw.WriteString("<div>")
+	_, _ = out.WriteString("<div>")
 
 	colorName, hex := htmlColor.RandomColor(3 * FlagMaxBrightness)
 	_, antiColor = htmlColor.RandomColor(3 * FlagMaxBrightness)
 
 	for r, _, err = in.ReadRune(); err == nil; r, _, err = in.ReadRune() {
 
-		_, _ = bw.WriteString("<span style=\"color: ")
+		_, _ = out.WriteString("<span style=\"color: ")
 
 		if FlagInventColor {
 			hex = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
@@ -127,7 +127,7 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 		} else {
 			colorName, hex = htmlColor.RandomColor(3 * FlagMaxBrightness)
 		}
-		_, _ = bw.WriteString(hex)
+		_, _ = out.WriteString(hex)
 
 		if FlagAntiColor || FlagDrift {
 			var cnt = 0
@@ -142,7 +142,7 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 			cd, ccr = htmlColor.ColorDistance(hex, antiColor)
 			// check contrast & color differentiation
 
-			for (cd < MINCOLORDISTANCE || ccr < MINCONTRAST) && cnt < 500 {
+			for (cd < MINCOLORDISTANCE || ccr < MINCONTRAST) && cnt < MAXATTEMPTS {
 				xLog.Printf("%s vs %s: cd: %12f  ccr: %13f",
 					hex, antiColor, cd, ccr)
 				// if not enough contrast, try again ...
@@ -155,17 +155,17 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 				// but not forever!
 				cnt++
 			}
-			if cnt >= 100 {
+			if cnt >= MAXATTEMPTS {
 				xLog.Printf(
 					"huh? Could not get a good contrasting color for %s %s (tried %d times!)",
 					colorName, hex, cnt)
 			}
-			_, _ = bw.WriteString(";padding: 1px 0px 1px 0px; background-color: ")
-			_, _ = bw.WriteString(antiColor)
+			_, _ = out.WriteString(";padding: 1px 0px 1px 0px; background-color: ")
+			_, _ = out.WriteString(antiColor)
 		}
-		_, _ = bw.WriteString(";\">")
-		_, _ = bw.WriteRune(r)
-		_, _ = bw.WriteString("</span>")
+		_, _ = out.WriteString(";\">")
+		_, _ = out.WriteRune(r)
+		_, _ = out.WriteString("</span>")
 		if FlagDebug && FlagVerbose {
 			xLog.Printf("char %c random color %s", r, colorName)
 		}
@@ -174,5 +174,5 @@ func colorize(in *bufio.Reader, bw *bufio.Writer) {
 		xLog.Printf("Failed to write colorized string to output because %s", err.Error())
 		myFatal()
 	}
-	_, _ = bw.WriteString("</div>\n")
+	_, _ = out.WriteString("</div>\n")
 }
