@@ -5,6 +5,10 @@ total brightness of the color less than 160*3 (dark enough
 to show up against white). Currently, this is an arbitrary
 limit. Writes a &lt;div&gt; with the colorized text to STDOUT.
 
+`madcolor` can also take input from a file, and write it to 
+a file. The `--paste` option will write the output to the
+clipboard, if supported.
+
 Unless `--invent` is specified, the random colors are selected
 from a preexisting list of HTML colors (presently the websafe
 colors &amp; PANTONE colors-of-the-year approximations)
@@ -30,19 +34,29 @@ will (and should) differ.
 <blockquote>&lt;div&gt;&lt;span style="color:#6b8e23;"&gt;r&lt;/span&gt;&lt;span style="color:#696969;"&gt;a&lt;/span&gt;&lt;span style="color:#595ca1;"&gt;n&lt;/span&gt;&lt;span style="color:#8a2be2;"&gt;d&lt;/span&gt;&lt;span style="color:#6667ab;"&gt;o&lt;/span&gt;&lt;span style="color:#cd5c5c;"&gt;m&lt;/span&gt;&lt;span style="color:#41b6ab;"&gt;l&lt;/span&gt;&lt;span style="color:#5f4b8b;"&gt;y&lt;/span&gt;&lt;span style="color:#7b68ee;"&gt; &lt;/span&gt;&lt;span style="color:#939597;"&gt;c&lt;/span&gt;&lt;span style="color:#ff6f61;"&gt;o&lt;/span&gt;&lt;span style="color:#41b6ab;"&gt;l&lt;/span&gt;&lt;span style="color:#daa520;"&gt;o&lt;/span&gt;&lt;span style="color:#483d8b;"&gt;r&lt;/span&gt;&lt;span style="color:#228b22;"&gt; &lt;/span&gt;&lt;span style="color:#008b8b;"&gt;a&lt;/span&gt;&lt;span style="color:#00ced1;"&gt; &lt;/span&gt;&lt;span style="color:#800000;"&gt;s&lt;/span&gt;&lt;span style="color:#20b2aa;"&gt;t&lt;/span&gt;&lt;span style="color:#0000ff;"&gt;r&lt;/span&gt;&lt;span style="color:#c94476;"&gt;i&lt;/span&gt;&lt;span style="color:#c94476;"&gt;n&lt;/span&gt;&lt;span style="color:#b565a7;"&gt;g&lt;/span&gt;&lt;/div&gt;</blockquote>
 
 ## TODO:
-* random background color?
-  * Complementary background color?
-* Select darkness / brightness levels?
+* ~~random background color~~
+  * Done, see `--anti`
+* ~~Complementary background color?~~
+* ~~Select darkness / brightness levels?~~
+  * Done, see `--max` and `--min`
 * Add more colors?
 * ~~Generate random HTML colors?~~
   * Done see `--invent` flag
 * Return properly capitalized color names?
-* Output file option?
+* ~~Input file option?~~
+  * Done see `--input`
+* ~~Output file option?~~
+  * Done see `--output`
 * Add usage() directions
 * Create an external colorlist option?
   * Check for madcolor.csv?
 * force color of whitespace (default white)?
-* read input file?
+  * TODO as `--whitespace <string>` where string matches a hex color identifier or name`
+    * Hex color identifier: `#[a-fA-F0-9]{6}` (don't bother with three-hex-digit colors)
+    * color name: "aliceblue", case ignored
+* ~~copy to clipboard~~
+  * Done `--paste`
+* Suppress output to stdout if writing to a file or clipboard
 
 ## FLAGS
 
@@ -65,11 +79,14 @@ Invent colors, between minimum/maximum total brightness
 #### --min
 Set minimum brightness (default 0) for output colors.
 
-### --max
+#### --max
 Set maximum brightness (default 160) for output colors.
 
 #### -o, --output
 Write output to a file instead of stdout
+
+#### -p, --paste
+Write output to the clipboard in addition to stdout or input file
 
 #### -q, --quiet
 By default, debug / verbose output goes to both stderr and the logfile;

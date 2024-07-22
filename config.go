@@ -40,6 +40,7 @@ var FlagOutput string
 var FlagOutputDir string
 var FlagInput string
 var FlagDrift bool
+var FlagClip bool
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -75,6 +76,9 @@ func initFlags() {
 		true, "Suppress log output to stdout and stderr (output still goes to logfile)")
 
 	// program flags
+	nFlags.BoolVarP(&FlagClip, "paste", "p", false,
+		"Paste buffer to clipboard (if clipboard is available)")
+
 	nFlags.BoolVarP(&FlagDrift, "drift", "", false,
 		"Drift mode uses the previous background as the new foreground")
 
@@ -126,6 +130,15 @@ func initFlags() {
 	if FlagQuiet {
 		xLog.SetOutput(xLogBuffer)
 		// messages only to logfile, not stderr
+	}
+
+	if FlagClip && !modeClipboardAvailable {
+		xLog.Printf("This system does not offer a clipboard to paste to! --paste disabled!")
+		err = nFlags.Set("paste", "false")
+		if nil != err {
+			xLog.Printf("huh? Could not disable FlagClip (paste to clipboard) because %s\n", err.Error())
+			myFatal()
+		}
 	}
 
 	if FlagDebug && FlagVerbose {

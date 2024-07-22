@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"golang.design/x/clipboard"
 	"io"
 	htmlColor "madcolor/htmlcolor"
 	"madcolor/misc"
@@ -9,6 +11,8 @@ import (
 	"path"
 	"strings"
 )
+
+var modeClipboardAvailable = false
 
 const MAXATTEMPTS = 100
 
@@ -28,6 +32,15 @@ func main() {
 
 	initLog("madcolor.log")
 	defer closeLog()
+	err := clipboard.Init()
+	if nil != err {
+		modeClipboardAvailable = true
+	} else {
+		modeClipboardAvailable = false
+		if FlagDebug || FlagVerbose {
+			xLog.Printf("Clipboard not available because %s", err.Error())
+		}
+	}
 	initFlags()
 	htmlColor.Initialize()
 
@@ -110,6 +123,14 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 	var r rune
 	var err error = nil
 	var antiColor string
+	var b bytes.Buffer
+
+	if FlagClip {
+		var writerList []io.Writer
+		writerList = append(writerList, bufio.NewWriter(&b))
+		multiWriter := io.MultiWriter(writerList...)
+		out = bufio.NewWriter(multiWriter)
+	}
 
 	_, _ = out.WriteString("<div>")
 
@@ -175,4 +196,9 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 		myFatal()
 	}
 	_, _ = out.WriteString("</div>\n")
+
+	if FlagClip {
+		_ = clipboard.Write(clipboard.FmtText, b.Bytes())
+	}
+
 }
