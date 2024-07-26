@@ -16,7 +16,8 @@ var modeClipboardAvailable = false
 
 const MAXATTEMPTS = 100
 
-// very tweaky values, colordistance 85 / contrast 0.36
+// MINCOLORDISTANCE and MINCONTRAST very tweaky values,
+// colordistance 85.0 / contrast 0.36 */
 const MINCOLORDISTANCE float64 = 85.0
 const MINCONTRAST float64 = 0.36
 
@@ -27,13 +28,14 @@ const MINCONTRAST float64 = 0.36
 // destination, initializes the HTML color names, and
 // colorizes the input using the colorize function.
 func main() {
-	var bw *bufio.Writer
 	var br *bufio.Reader
+	var buffw bytes.Buffer
+	var writerList []io.Writer
 
 	initLog("madcolor.log")
 	defer closeLog()
 	err := clipboard.Init()
-	if nil != err {
+	if nil == err {
 		modeClipboardAvailable = true
 	} else {
 		modeClipboardAvailable = false
@@ -48,10 +50,28 @@ func main() {
 
 	f := getOutput()
 	defer misc.DeferError(f.Close)
-	bw = bufio.NewWriter(f)
-	defer misc.DeferError(bw.Flush)
+	writerList = append(writerList, f)
 
-	colorize(br, bw)
+	if FlagClip {
+		buffw.Grow(16 * 1024)
+		writerList = append(writerList, &buffw)
+	}
+
+	if FlagStdout {
+		writerList = append(writerList, os.Stdout)
+	}
+
+	mw := bufio.NewWriter(io.MultiWriter(writerList...))
+	colorize(br, mw)
+
+	err = mw.Flush()
+	if nil != err {
+		xLog.Printf("Could not flush bytes from buffered multiwriter because %s", err.Error())
+	}
+
+	if FlagClip {
+		_ = clipboard.Write(clipboard.FmtText, buffw.Bytes())
+	}
 }
 
 // getOutput returns a *os.File that represents the output destination.
@@ -91,7 +111,7 @@ func getInput() (br *bufio.Reader) {
 	if misc.IsStringSet(&FlagInput) {
 		f, err := os.Open(FlagInput)
 		if err != nil {
-			xLog.Printf("Could not open %s because %s", &FlagInput, err.Error())
+			xLog.Printf("Could not open %s because %s", FlagInput, err.Error())
 			myFatal()
 		}
 		return bufio.NewReader(f)
@@ -123,14 +143,6 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 	var r rune
 	var err error = nil
 	var antiColor string
-	var b bytes.Buffer
-
-	if FlagClip {
-		var writerList []io.Writer
-		writerList = append(writerList, bufio.NewWriter(&b))
-		multiWriter := io.MultiWriter(writerList...)
-		out = bufio.NewWriter(multiWriter)
-	}
 
 	_, _ = out.WriteString("<div>")
 
@@ -196,9 +208,4 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 		myFatal()
 	}
 	_, _ = out.WriteString("</div>\n")
-
-	if FlagClip {
-		_ = clipboard.Write(clipboard.FmtText, b.Bytes())
-	}
-
 }

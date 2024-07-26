@@ -41,6 +41,7 @@ var FlagOutputDir string
 var FlagInput string
 var FlagDrift bool
 var FlagClip bool
+var FlagStdout bool
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -76,6 +77,12 @@ func initFlags() {
 		true, "Suppress log output to stdout and stderr (output still goes to logfile)")
 
 	// program flags
+
+	// this USUALLY defaults to TRUE, but is set to FALSE if the user does not
+	// explicitly specify it when using --output.
+	nFlags.BoolVarP(&FlagStdout, "stdout", "", true,
+		"Write to STDOUT as well as the output file")
+
 	nFlags.BoolVarP(&FlagClip, "nopaste", "", true,
 		"Suppress paste of buffer to clipboard (if clipboard is available)")
 
@@ -101,7 +108,7 @@ func initFlags() {
 		"", "Input file to colorize, defaults to stdin")
 
 	nFlags.StringVarP(&FlagOutput, "output", "o",
-		"", "Input file to colorize, defaults to --text default string")
+		"", "Write colorized text to file instead of STDOUT. Use --stdout if output should go both to file and STDOUT.")
 
 	for flagName, optName := range hideFlags {
 		err = nFlags.MarkHidden(optName)
@@ -183,6 +190,25 @@ func initFlags() {
 		} else {
 			xLog.Printf("\n***** %s BuildInfo: *****\n%s\n%s\n",
 				exeName, bi.String(), strings.Repeat("*", 22+len(exeName)))
+		}
+	}
+
+	// Override the default TRUE setting for FlagStdout iff FlagStdout was not set by user
+	if misc.IsStringSet(&FlagOutput) && !nFlags.Changed("stdout") {
+		nFlags.Set("stdout", "false")
+		if nil != err {
+			xLog.Printf("huh? Could not disable FlagStdout (because output goes to file) because %s", err.Error())
+			myFatal()
+		}
+	}
+
+	if !misc.IsStringSet(&FlagOutput) && !FlagClip {
+		if !FlagStdout {
+			err = nFlags.Set("stdout", "true")
+			if nil != err {
+				xLog.Printf("huh? Could not enable FlagStdout (because no other output specified) because %s", err.Error())
+				myFatal()
+			}
 		}
 	}
 
