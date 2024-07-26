@@ -195,7 +195,7 @@ func initFlags() {
 
 	// Override the default TRUE setting for FlagStdout iff FlagStdout was not set by user
 	if misc.IsStringSet(&FlagOutput) && !nFlags.Changed("stdout") {
-		nFlags.Set("stdout", "false")
+		err = nFlags.Set("stdout", "false")
 		if nil != err {
 			xLog.Printf("huh? Could not disable FlagStdout (because output goes to file) because %s", err.Error())
 			myFatal()

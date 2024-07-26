@@ -85,12 +85,16 @@ Set maximum brightness (default 160) for output colors.
 #### -o, --output
 Write output to a file instead of stdout
 
-#### -p, --paste
-Write output to the clipboard in addition to stdout or input file
+#### -nopaste
+Suppress output to the clipboard in addition to stdout or input file.
+By default, output is **always** copied to the clipboard.
 
 #### -q, --quiet
 By default, debug / verbose output goes to both stderr and the logfile;
 this flag suppresses output to logfile.
+
+#### --stdout
+Always send output to stdout, even when writing to a file.
 
 #### -t, --text 
 Supply a string to decorate. Otherwise, the default string is decorated and returned.
