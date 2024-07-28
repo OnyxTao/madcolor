@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/spf13/pflag"
-	"madcolor/misc"
 	"os"
 	"path/filepath"
 	"runtime/debug"
 	"strings"
+
+	"github.com/spf13/pflag"
+	"madcolor/misc"
 )
 
 const DEFAULTCOLORTEXT = "We promptly judged antique ivory buckles for the next prize !@#$%^*(){}[];:.,?"
@@ -42,6 +43,7 @@ var FlagInput string
 var FlagDrift bool
 var FlagClip bool
 var FlagStdout bool
+var FlagPipe bool
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -77,6 +79,9 @@ func initFlags() {
 		true, "Suppress log output to stdout and stderr (output still goes to logfile)")
 
 	// program flags
+
+	nFlags.BoolVarP(&FlagPipe, "pipe", "p", false,
+		"Pipe mode; read from STDIN, write to STDOUT, all other io disabled.")
 
 	// this USUALLY defaults to TRUE, but is set to FALSE if the user does not
 	// explicitly specify it when using --output.
@@ -131,7 +136,15 @@ func initFlags() {
 			os.Args)
 	}
 
-	// do quietness setup first
+	if FlagPipe {
+		flagSet("stdout", "true")
+		flagSet("stderr", "false")
+		flagSet("input", "")
+		flagSet("output", "")
+		flagSet("quiet", "true")
+	}
+
+	// do quietness
 	// only write to logfile not stderr
 	// for debug and verbose messages
 	if FlagQuiet {
@@ -143,11 +156,7 @@ func initFlags() {
 		if FlagVerbose {
 			xLog.Printf("This system does not offer a clipboard to paste to! --nopaste enabled!")
 		}
-		err = nFlags.Set("nopaste", "false")
-		if nil != err {
-			xLog.Printf("huh? Could not disable FlagClip (paste to clipboard) because %s\n", err.Error())
-			myFatal()
-		}
+		flagSet("nopaste", "false")
 	}
 
 	if FlagDebug && FlagVerbose {
@@ -195,20 +204,12 @@ func initFlags() {
 
 	// Override the default TRUE setting for FlagStdout iff FlagStdout was not set by user
 	if misc.IsStringSet(&FlagOutput) && !nFlags.Changed("stdout") {
-		err = nFlags.Set("stdout", "false")
-		if nil != err {
-			xLog.Printf("huh? Could not disable FlagStdout (because output goes to file) because %s", err.Error())
-			myFatal()
-		}
+		flagSet("sdtout", "false")
 	}
 
 	if !misc.IsStringSet(&FlagOutput) && !FlagClip {
 		if !FlagStdout {
-			err = nFlags.Set("stdout", "true")
-			if nil != err {
-				xLog.Printf("huh? Could not enable FlagStdout (because no other output specified) because %s", err.Error())
-				myFatal()
-			}
+			flagSet("stdout", "true")
 		}
 	}
 
@@ -236,4 +237,13 @@ func logFlag(flag *pflag.Flag) {
 //	UsageMessage()
 func UsageMessage() {
 	xLog.Printf("Useful Information Here")
+}
+
+func flagSet(flag, val string) {
+	err := nFlags.Set(flag, val)
+	if nil != err {
+		xLog.Printf("huh? Could not set Flag [%s] to [%s] because %s",
+			flag, val, err.Error())
+		myFatal()
+	}
 }

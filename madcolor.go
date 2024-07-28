@@ -3,13 +3,14 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"golang.design/x/clipboard"
 	"io"
-	htmlColor "madcolor/htmlcolor"
-	"madcolor/misc"
 	"os"
 	"path"
 	"strings"
+
+	"golang.design/x/clipboard"
+	htmlColor "madcolor/htmlcolor"
+	"madcolor/misc"
 )
 
 var modeClipboardAvailable = false
@@ -32,8 +33,11 @@ func main() {
 	var buffw bytes.Buffer
 	var writerList []io.Writer
 
+	// SETUP *****************************
+
 	initLog("madcolor.log")
 	defer closeLog()
+
 	err := clipboard.Init()
 	if nil == err {
 		modeClipboardAvailable = true
@@ -43,8 +47,12 @@ func main() {
 			xLog.Printf("Clipboard not available because %s", err.Error())
 		}
 	}
+
 	initFlags()
+
 	htmlColor.Initialize()
+
+	// LOGIC *************************
 
 	br = getInput()
 
@@ -57,10 +65,6 @@ func main() {
 		writerList = append(writerList, &buffw)
 	}
 
-	if FlagStdout {
-		writerList = append(writerList, os.Stdout)
-	}
-
 	mw := bufio.NewWriter(io.MultiWriter(writerList...))
 	colorize(br, mw)
 
@@ -68,7 +72,6 @@ func main() {
 	if nil != err {
 		xLog.Printf("Could not flush bytes from buffered multiwriter because %s", err.Error())
 	}
-
 	if FlagClip {
 		_ = clipboard.Write(clipboard.FmtText, buffw.Bytes())
 	}
@@ -85,6 +88,11 @@ func main() {
 func getOutput() (f *os.File) {
 	var fn string
 	var err error
+
+	if FlagPipe {
+		return os.Stdout
+	}
+
 	if misc.IsStringSet(&FlagOutput) {
 		fn = path.Join(FlagOutputDir, FlagOutput)
 		f, err = os.Create(fn)
@@ -108,6 +116,10 @@ func getOutput() (f *os.File) {
 // creates a `bufio.Reader` to read from the string specified by the
 // `FlagText` variable. The `bufio.Reader` is then returned.
 func getInput() (br *bufio.Reader) {
+	if FlagPipe {
+		return bufio.NewReader(os.Stdin)
+	}
+
 	if misc.IsStringSet(&FlagInput) {
 		f, err := os.Open(FlagInput)
 		if err != nil {
@@ -116,6 +128,7 @@ func getInput() (br *bufio.Reader) {
 		}
 		return bufio.NewReader(f)
 	}
+
 	return bufio.NewReader(strings.NewReader(FlagText))
 }
 

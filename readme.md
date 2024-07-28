@@ -24,12 +24,14 @@ would be:
 <div style="text-align: center;">
 <span style="font-size: 150%; font-family: 'JetBrains Mono', monospace; color: navy; background-color: beige; padding: 10px; display: inline-block;"><sup>(a+b+c)</sup>&frasl;<sub>3</sub></span></div>
 
+
 ## USAGE
 madcolor --text "randomly color a string"
 
 ## OUTPUT
 This is example output from one run. Since colors are created/assigned randomly, each run
 will (and should) differ.
+
 
 <blockquote>&lt;div&gt;&lt;span style="color:#6b8e23;"&gt;r&lt;/span&gt;&lt;span style="color:#696969;"&gt;a&lt;/span&gt;&lt;span style="color:#595ca1;"&gt;n&lt;/span&gt;&lt;span style="color:#8a2be2;"&gt;d&lt;/span&gt;&lt;span style="color:#6667ab;"&gt;o&lt;/span&gt;&lt;span style="color:#cd5c5c;"&gt;m&lt;/span&gt;&lt;span style="color:#41b6ab;"&gt;l&lt;/span&gt;&lt;span style="color:#5f4b8b;"&gt;y&lt;/span&gt;&lt;span style="color:#7b68ee;"&gt; &lt;/span&gt;&lt;span style="color:#939597;"&gt;c&lt;/span&gt;&lt;span style="color:#ff6f61;"&gt;o&lt;/span&gt;&lt;span style="color:#41b6ab;"&gt;l&lt;/span&gt;&lt;span style="color:#daa520;"&gt;o&lt;/span&gt;&lt;span style="color:#483d8b;"&gt;r&lt;/span&gt;&lt;span style="color:#228b22;"&gt; &lt;/span&gt;&lt;span style="color:#008b8b;"&gt;a&lt;/span&gt;&lt;span style="color:#00ced1;"&gt; &lt;/span&gt;&lt;span style="color:#800000;"&gt;s&lt;/span&gt;&lt;span style="color:#20b2aa;"&gt;t&lt;/span&gt;&lt;span style="color:#0000ff;"&gt;r&lt;/span&gt;&lt;span style="color:#c94476;"&gt;i&lt;/span&gt;&lt;span style="color:#c94476;"&gt;n&lt;/span&gt;&lt;span style="color:#b565a7;"&gt;g&lt;/span&gt;&lt;/div&gt;</blockquote>
 
@@ -88,6 +90,11 @@ Write output to a file instead of stdout
 #### -nopaste
 Suppress output to the clipboard in addition to stdout or input file.
 By default, output is **always** copied to the clipboard.
+
+#### -p, --pipe
+Function in pipe mode, from STDIN to STDOUT. `--input`, `--output`, 
+are disabled. All output to STDOUT is disabled. Output is not placed
+in the clipboard.
 
 #### -q, --quiet
 By default, debug / verbose output goes to both stderr and the logfile;
