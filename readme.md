@@ -9,9 +9,11 @@ limit. Writes a &lt;div&gt; with the colorized text to STDOUT.
 a file. The `--paste` option will write the output to the
 clipboard, if supported.
 
+`madcolor` can function as a pipe (read from `STDIN`, write to `STDOUT`) with `--pipe`
+
 Unless `--invent` is specified, the random colors are selected
 from a preexisting list of HTML colors (presently the websafe
-colors &amp; PANTONE colors-of-the-year approximations)
+colors &amp; and the PANTONE colors-of-the-year approximations)
 
 Create a logfile `madcolor.log` in the working directory; all error
 and verbose information is written to stderr and the logfile. `--quiet`
@@ -22,7 +24,18 @@ a rough measure of the luminance of any particular color as the average
 of the values of red, green, and blue. For a color RGB(a,b,c), the brightness
 would be:
 <div style="text-align: center;">
-<span style="font-size: 150%; font-family: 'JetBrains Mono', monospace; color: navy; background-color: beige; padding: 10px; display: inline-block;"><sup>(a+b+c)</sup>&frasl;<sub>3</sub></span></div>
+<span style="font-size: 150%; font-family: 'JetBrains Mono', 'Hack', 'Cascadia Code PL', monospace; color: navy; background-color: beige; padding: 10px; display: inline-block;"><sup>(a+b+c)</sup>&frasl;<sub>3</sub></span></div>
+
+## INSTALLING
+Prerequisites:
+* `git` installed and configured with github credentials
+* working GO compiler
+* `GOPATH` environment variable correctly set
+
+To install and compile:
+ * `git clone github.com/onyx-tao/madcolor.git`
+ * `cd madcolor`
+ * `go install madcolor`
 
 
 ## USAGE
@@ -42,6 +55,7 @@ will (and should) differ.
 * ~~Select darkness / brightness levels?~~
   * Done, see `--max` and `--min`
 * Add more colors?
+  * Added PANTONE color-of-year colors 2000&ndash;2024
 * ~~Generate random HTML colors?~~
   * Done see `--invent` flag
 * Return properly capitalized color names?
@@ -58,7 +72,10 @@ will (and should) differ.
     * color name: "aliceblue", case ignored
 * ~~copy to clipboard~~
   * Done `--nopaste` will disable
-* Suppress output to stdout if writing to a file or clipboard
+* ~~Suppress output to stdout if writing to a file or clipboard~~
+  * Done
+* Create release YAML for packages on GitHub
+  * Not sure how to do this ... must research
 
 ## FLAGS
 
