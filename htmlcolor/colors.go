@@ -1,28 +1,33 @@
 package htmlcolors
 
 import (
+	"crypto/rand"
 	"fmt"
 	"math"
-	"math/rand/v2"
+	"math/big"
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"sync"
+
+	"madcolor/misc"
 )
 
-const regExpHexString = "#[0-9a-fA-F]{6}"
+const regExpHex6 = "#?([\\da-fA-F]{6})"
+const regExpHex3 = "#?([\\da-fA-F])([\\da-fA-F])([\\da-fA-F])"
 
 type htmlColor struct {
-	name   string
-	hex    string
-	bright int
+	name string
+	hex  string
 }
 
 var htmlColorArray []htmlColor
 var setupLock sync.Mutex
 var setup = false
 
-var rxHex *regexp.Regexp
+var rxHex6 *regexp.Regexp
+var rxHex3 *regexp.Regexp
 
 // Initialize initializes the package by setting up the necessary variables and data.
 // It acquires a lock to ensure exclusive access while setting up.
@@ -37,26 +42,78 @@ var rxHex *regexp.Regexp
 // and assigns it to rxHex variable.
 //
 // This function does not return any values.
-
 func Initialize() {
 	setupLock.Lock()
 	defer setupLock.Unlock()
-	if setup {
+	if setup { // the goal is that after returning from Initialize, we're initialized
 		return
 	}
 	setup = true
-	rxHex = regexp.MustCompile(regExpHexString)
+	rxHex6 = regexp.MustCompile(regExpHex6)
+	rxHex3 = regexp.MustCompile(regExpHex3)
 	htmlColorArray = make([]htmlColor, len(ColorNames), len(ColorNames))
 	ix := 0
 	for key, val := range ColorNames {
 		htmlColorArray[ix].name = key
 		htmlColorArray[ix].hex = val
-		htmlColorArray[ix].bright = getDarkness(val)
 		ix++
 		if ix > len(ColorNames) {
 			panic("array overflow in HtmlColorsSetup")
 		}
 	}
+}
+
+// StringToColor takes a string and converts it to a hexadecimal color value.
+// It first checks if the setup has been done by calling the Initialize function.
+// If the string matches a 6-digit hexadecimal pattern, it extracts the digits
+// and returns the corresponding color value in the format "#RRGGBB". If the string
+// matches a 3-digit hexadecimal pattern, it duplicates each digit and returns
+// the color value in the format "#RRGGBB". If the string matches a color name in
+// the ColorNames map, it retrieves the hexadecimal value from the map and returns
+// it. If none of the above conditions are met, it returns the default color value
+// "#888888" and false to indicate that the conversion was unsuccessful.
+//
+// The function relies on the rxHex6 and rxHex3 regular expression patterns for
+// validating the hexadecimal strings. The function also converts the input string
+// to lowercase before processing. The function uses a strings.Builder to efficiently
+// build the resulting color value by appending characters.
+//
+// This function returns the hexadecimal color value as a string and a boolean flag
+// indicating if the conversion was successful or not.
+func StringToColor(s string) (hex string, ok bool) {
+	var sb strings.Builder
+
+	if !setup {
+		Initialize()
+	}
+
+	if rxHex6.MatchString(s) {
+		zx := rxHex6.FindSubmatch([]byte(s))
+		sb.WriteRune('#')
+		sb.WriteString(string(zx[1]))
+		return sb.String(), true
+	}
+
+	if rxHex3.MatchString(s) {
+		zx := rxHex3.FindSubmatch([]byte(s))
+		sb.WriteRune('#')
+		sb.WriteByte(zx[1][0])
+		sb.WriteByte(zx[1][0])
+		sb.WriteByte(zx[2][0])
+		sb.WriteByte(zx[2][0])
+		sb.WriteByte(zx[3][0])
+		sb.WriteByte(zx[3][0])
+		return sb.String(), true
+	}
+
+	s = strings.ToLower(s)
+
+	hex, ok = ColorNames[s]
+	if ok {
+		return hex, true
+	}
+
+	return "#888888", false
 }
 
 // relativeLuminance calculates the relative luminance of a given RGB color.
@@ -99,55 +156,63 @@ func relativeLuminance(rgb ...uint8) (rl float64) {
 		RGB[ix] = a
 	}
 
-	return ((0.2126 * RGB[0]) + (0.7152 * RGB[1]) + (0.0722 * RGB[2]))
+	return (0.2126 * RGB[0]) + (0.7152 * RGB[1]) + (0.0722 * RGB[2])
 }
 
-func InventColor(minl int, maxl int) (color string) {
-	diff := maxl - minl
-	if diff <= 20 {
-		return "#000000"
+func InventColor(backColor string, minContrast int, minDistance int) (fg, bg string) {
+	var contrast = float64(minContrast) / 100.0
+	var distance = float64(float64(0xffffff)*float64(minDistance)) / 100.0
+	var cnt, dst float64
+	var ix int
+
+	if misc.IsStringSet(&backColor) {
+		bg = backColor
+	} else {
+		bg = randColor()
 	}
 
-	// I miss do-while ...
-	sum, a, b, c := rndbytes()
-	for sum > maxl && sum < minl {
-		sum, a, b, c = rndbytes()
+	cnt, dst = 0.0, 0.0
+	for ix < 500 && (cnt < contrast || dst < distance) {
+		fg = randColor()
+		cnt, dst = ColorDistance(fg, bg)
+		ix++
 	}
-	msg := fmt.Sprintf("#%02x%02x%02x", a, b, c)
-	// if Debug { // no real debug mode for pckg
-	// _, _ = fmt.Fprintf(os.Stderr, "invented hex color: %s\n", msg)
-	// }
-	return msg
+	if ix >= 500 {
+		fg = "#FFFFFF" // white
+		bg = "#000000" // black
+	}
+	return fg, bg
 }
 
-func rndbytes() (int, int, int, int) {
-	a := int(rand.Int32N(0xFF + 1))
-	b := int(rand.Int32N(0xFF + 1))
-	c := int(rand.Int32N(0xFF + 1))
-	sum := a + b + c
-	return sum, a, b, c
+func randColorBytes() (sum, r, g, b int) {
+	bits := make([]byte, 3)
+	_, _ = rand.Read(bits)
+	return int(bits[0] + bits[1] + bits[2]), int(bits[0]), int(bits[1]), int(bits[2])
+}
+
+func randColor() (color string) {
+	_, r, g, b := randColorBytes()
+	return fmt.Sprintf("#%02x%02x%02x", r, g, b)
 }
 
 // AntiColor converts a hexadecimal color representation to its anti-color.
 // It expects the color to be in the format "#RRGGBB".
 // If the color format is invalid, it will panic with an error message.
-// The anti-color is calculated by subtracting each RGB component from 0xFF and
-// then converting it back to a hexadecimal value.
+// The anti-color is calculated by subtracting the current value from
+// 0xFFFFFF. In case of error, panics.
 // The function returns the anti-color as a string in the format "#RRGGBB".
-func AntiColor(hex string) (acolor string) {
-	if !rxHex.MatchString(hex) {
+func AntiColor(hex string) (antiColor string) {
+	var hv int64
+	var err error
+	if !rxHex6.MatchString(hex) {
 		panic("invalid hex format: [" + hex + "] (don't do that!)")
 	}
-	a := 0xff - hexByteToInt(hex[1:3])
-	b := 0xff - hexByteToInt(hex[3:5])
-	c := 0xff - hexByteToInt(hex[5:7])
-	return fmt.Sprintf("#%02x%02x%02x", a, b, c)
-}
-
-func getDarkness(hex string) (val int) {
-	return hexByteToInt(hex[1:3]) +
-		hexByteToInt(hex[3:5]) +
-		hexByteToInt(hex[5:7])
+	m := rxHex6.FindStringSubmatch(hex)
+	hv, err = strconv.ParseInt(m[1], 16, 64)
+	if err != nil {
+		panic(fmt.Sprintf("Could not convert %s to integer?", m[1]))
+	}
+	return fmt.Sprintf("#%06X", 0xFFFFFF-hv)
 }
 
 func hexByteToInt(hex string) (val int) {
@@ -165,7 +230,7 @@ func hexByteToInt(hex string) (val int) {
 // If the color format is invalid, it will panic with an error message.
 // The function returns three integers representing the red, green, and blue values of the color.
 func getRGB(hex string) (r, g, b int) {
-	if !rxHex.MatchString(hex) {
+	if !rxHex6.MatchString(hex) {
 		panic("invalid hex format: [" + hex + "] (don't do that!)")
 	}
 	return hexByteToInt(hex[1:3]), hexByteToInt(hex[3:5]), hexByteToInt(hex[5:7])
@@ -198,35 +263,25 @@ func ColorDistance(a string, b string) (dist float64, contrast float64) {
 
 }
 
-// RandomColor returns a random color name and its hexadecimal representation.
-// It takes an optional parameter, `mb`, which specifies the maximum brightness
-// value for the randomly generated colors. By default, it uses the maximum
-// brightness value of 0xFF + 0xFF + 0xFF.
-// If the maximum brightness value is less than or equal to 0, it returns the
-// color name "black" and its hexadecimal representation "#000000".
-// The function selects a random starting index within the range of available
-// color names and iterates over the htmlColorArray to find a color with
-// brightness less than the specified maximum. If all colors in the array have
-// maximum brightness, it returns "black" and "#000000".
-// The function then returns the selected color name and its hexadecimal
-// representation as a tuple (name, hex).
-func RandomColor(mb ...int) (name string, hex string) {
-	var maxColorBrightness = 0xFF + 0xFF + 0xFF
-	ixStart := int(rand.Int32N(int32(len(ColorNames))))
-	if len(mb) > 0 {
-		maxColorBrightness = mb[0]
-	}
-	if maxColorBrightness <= 0 {
-		return "black", "#000000"
-	}
-	h := &htmlColorArray[ixStart]
+func RandomColor(bg string, contrast int, distance int) (name string, hex string) {
+
+	var minContrast = float64(contrast) / 100.0
+	var minDistance = float64(int64(0xffffff)*int64(distance)) / 100.0
+
+	var arrayLen = big.NewInt(int64(len(ColorNames)))
+	ixBig, _ := rand.Int(rand.Reader, arrayLen)
+	ixStart := ixBig.Int64()
+
 	ix := ixStart
-	for h.bright >= maxColorBrightness {
-		ix = (ix + 1) % len(ColorNames)
-		if ix == ixStart {
-			return "black", "#000000"
+	fg := htmlColorArray[ix].hex
+	dst, ct := ColorDistance(fg, bg)
+	for ct < minContrast || dst < minDistance {
+		ix = (ix + 1) % int64(len(htmlColorArray))
+		if ixStart == ix {
+			return "", "#000000"
 		}
-		h = &htmlColorArray[ix]
+		fg := htmlColorArray[ix].hex
+		dst, ct = ColorDistance(fg, bg)
 	}
-	return h.name, h.hex
+	return htmlColorArray[ix].name, htmlColorArray[ix].hex
 }

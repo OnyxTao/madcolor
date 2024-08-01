@@ -139,8 +139,8 @@ func myFatal(rcList ...int) {
 // available, well and good. Otherwise, print the message to
 // STDERR.
 func safeLogPrintf(format string, a ...any) {
-	//clmx.Lock()
-	//defer clmx.Unlock()
+	// clmx.Lock()
+	// defer clmx.Unlock()
 	if nil != xLogBuffer && nil != xLogFile {
 		xLog.Printf(format, a...)
 	} else {
@@ -175,5 +175,41 @@ func debugMapStringString(params map[string]string) {
 	sb.WriteString(fmt.Sprintf("\n\tgot map[string]string size %d\n", len(params)))
 	for k, v := range params {
 		sb.WriteString(fmt.Sprintf("\t[ %-20s ][ %-20s ]\n", k, v))
+	}
+}
+
+type NLVWriter struct {
+	writer *bufio.Writer
+}
+
+func NewNLVWriter(b *bufio.Writer) (q *NLVWriter) {
+	a := NLVWriter{b}
+	return &a
+}
+func (w *NLVWriter) WriteString(s ...string) {
+	for _, str := range s {
+		_, err := w.writer.WriteString(str)
+		if nil != err {
+			xLog.Printf("failed to write %s to bufio.writer because %s",
+				str, err.Error())
+		}
+	}
+}
+func (w *NLVWriter) Write(s ...[]byte) {
+	for _, str := range s {
+		_, err := w.writer.Write(str)
+		if nil != err {
+			xLog.Printf("failed to write %s to bufio.writer because %s",
+				string(str), err.Error())
+		}
+	}
+}
+func (w *NLVWriter) WriteRune(s ...rune) {
+	for _, str := range s {
+		_, err := w.writer.WriteRune(str)
+		if nil != err {
+			xLog.Printf("failed to write %s to bufio.writer because %s",
+				string(str), err.Error())
+		}
 	}
 }

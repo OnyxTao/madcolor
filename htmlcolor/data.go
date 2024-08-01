@@ -148,13 +148,13 @@ var ColorNames = map[string]string{
 	"teal":                 "#008080",
 	"thistle":              "#d8bfd8",
 	"tomato":               "#ff6347",
-	// "turquoise":            "#40e0d0",
-	"violet":      "#ee82ee",
-	"wheat":       "#f5deb3",
-	"white":       "#ffffff",
-	"whitesmoke":  "#f5f5f5",
-	"yellow":      "#ffff00",
-	"yellowgreen": "#9acd32",
+	"turquoise":            "#40e0d0",
+	"violet":               "#ee82ee",
+	"wheat":                "#f5deb3",
+	"white":                "#ffffff",
+	"whitesmoke":           "#f5f5f5",
+	"yellow":               "#ffff00",
+	"yellowgreen":          "#9acd32",
 	/* Pantone Color-Of-Year */
 	"cerulean":          "#9bb7d6",
 	"fuschia rose":      "#c94476",
@@ -183,4 +183,7 @@ var ColorNames = map[string]string{
 	"very peri":         "#6667ab",
 	"vivid magenta":     "#ba2649",
 	"peach fuzz":        "#f87c56",
+	/* interesting colors from elsewhere */
+	"amzn_0001": "#630f32", /* red matte */
+	"amzn_0002": "#0F6340", /* greenish matte */
 }

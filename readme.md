@@ -19,12 +19,8 @@ Create a logfile `madcolor.log` in the working directory; all error
 and verbose information is written to stderr and the logfile. `--quiet`
 suppresses this output to stderr (it does not suppress logfile output).
 
-This program refers to **brightness** in several parameters. This is
-a rough measure of the luminance of any particular color as the average 
-of the values of red, green, and blue. For a color RGB(a,b,c), the brightness
-would be:
-<div style="text-align: center;">
-<span style="font-size: 150%; font-family: 'JetBrains Mono', 'Hack', 'Cascadia Code PL', monospace; color: navy; background-color: beige; padding: 10px; display: inline-block;"><sup>(a+b+c)</sup>&frasl;<sub>3</sub></span></div>
+Relative Luminance is used to calculate and determine contrast. There is
+a minimum color distance (as grays have distracting/confusing contrast levels)
 
 ## INSTALLING
 Prerequisites:
@@ -49,6 +45,8 @@ will (and should) differ.
 <blockquote>&lt;div&gt;&lt;span style="color:#6b8e23;"&gt;r&lt;/span&gt;&lt;span style="color:#696969;"&gt;a&lt;/span&gt;&lt;span style="color:#595ca1;"&gt;n&lt;/span&gt;&lt;span style="color:#8a2be2;"&gt;d&lt;/span&gt;&lt;span style="color:#6667ab;"&gt;o&lt;/span&gt;&lt;span style="color:#cd5c5c;"&gt;m&lt;/span&gt;&lt;span style="color:#41b6ab;"&gt;l&lt;/span&gt;&lt;span style="color:#5f4b8b;"&gt;y&lt;/span&gt;&lt;span style="color:#7b68ee;"&gt; &lt;/span&gt;&lt;span style="color:#939597;"&gt;c&lt;/span&gt;&lt;span style="color:#ff6f61;"&gt;o&lt;/span&gt;&lt;span style="color:#41b6ab;"&gt;l&lt;/span&gt;&lt;span style="color:#daa520;"&gt;o&lt;/span&gt;&lt;span style="color:#483d8b;"&gt;r&lt;/span&gt;&lt;span style="color:#228b22;"&gt; &lt;/span&gt;&lt;span style="color:#008b8b;"&gt;a&lt;/span&gt;&lt;span style="color:#00ced1;"&gt; &lt;/span&gt;&lt;span style="color:#800000;"&gt;s&lt;/span&gt;&lt;span style="color:#20b2aa;"&gt;t&lt;/span&gt;&lt;span style="color:#0000ff;"&gt;r&lt;/span&gt;&lt;span style="color:#c94476;"&gt;i&lt;/span&gt;&lt;span style="color:#c94476;"&gt;n&lt;/span&gt;&lt;span style="color:#b565a7;"&gt;g&lt;/span&gt;&lt;/div&gt;</blockquote>
 
 ## TODO:
+* ~~Remove min/max brightness levels, replace with contrast control~~
+  * Done, see `--contrast`
 * ~~random background color~~
   * Done, see `--anti`
 * ~~Complementary background color?~~
@@ -80,7 +78,25 @@ will (and should) differ.
 ## FLAGS
 
 #### -a, --anti
-Adds  background color for color (r, g, b) of (255-r, 255-g, 255-b). Might not work well with grays; probably still needs some overall tweaking to guarantee a reasonable foreground/background contrast.
+Adds  background color for color (r, g, b) of (255-r, 255-g, 255-b),
+but if this has insufficient contrast, invent a color with sufficient
+contrast.
+
+#### -b, --background-color
+Assume the background color (for contrast calculation). Takes a string
+which may be either a six-digit hex value (such as "#AA3388") or the
+name of a webcolor. All web-safe colors are accepted, as well as some
+other pantone and other color names. If a color name is unrecognized,
+the program terminates. A string matching the regular expression:
+`#?([\da-fA-F]{6}|?[\da-fA-F]{3})`
+to be a hex value. A three-digit hex string is ALWAYS expanded
+to a six digit hexstring by doubling the hex digit. `#1D8` is
+equivalent to `#11DD88`.
+
+#### -c, --contrast
+This defines the minimum contrast between foreground and
+background as an integer from 0 (no contrast) 
+to 1000 (max contrast)
 
 #### -d, --debug
 Enable debug logic.
@@ -93,13 +109,7 @@ present.
 Input file to read 
 
 #### -I, --invent
-Invent colors, between minimum/maximum total brightness
-
-#### --min
-Set minimum brightness (default 0) for output colors.
-
-#### --max
-Set maximum brightness (default 160) for output colors.
+Invent colors, with minimum contrast
 
 #### -o, --output
 Write output to a file instead of stdout

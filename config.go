@@ -23,8 +23,6 @@ var nFlags *pflag.FlagSet
 
 /* secret flags */
 var FlagSlow bool
-var FlagMaxBrightness int
-var FlagMinBrightness int
 
 /* standard flags */
 
@@ -34,16 +32,19 @@ var FlagVerbose bool
 var FlagDebug bool
 
 /* program flags */
+var FlagBackgroundColor string
+var FlagContrast int8
 var FlagText string
 var FlagInventColor bool
 var FlagAntiColor bool
 var FlagOutput string
 var FlagOutputDir string
 var FlagInput string
-var FlagDrift bool
 var FlagClip bool
 var FlagStdout bool
 var FlagPipe bool
+
+var FlagDistance int8 = 20
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -80,6 +81,12 @@ func initFlags() {
 
 	// program flags
 
+	nFlags.Int8VarP(&FlagContrast, "contrast", "c", 350,
+		"minimum relative contrast between foreground and background")
+
+	nFlags.StringVarP(&FlagBackgroundColor, "background-color", "b", "white",
+		"Background color. Ignored for --anti.")
+
 	nFlags.BoolVarP(&FlagPipe, "pipe", "p", false,
 		"Pipe mode; read from STDIN, write to STDOUT, all other io disabled.")
 
@@ -94,14 +101,9 @@ func initFlags() {
 	nFlags.BoolVarP(&FlagDrift, "drift", "", false,
 		"Drift mode uses the previous background as the new foreground")
 
-	nFlags.IntVarP(&FlagMaxBrightness, "max", "", 160,
-		"maximum total brightness of any foreground color")
-
-	nFlags.IntVarP(&FlagMinBrightness, "min", "", 0,
-		"minimum total brightness of any foreground color")
-
 	nFlags.BoolVarP(&FlagAntiColor, "anti", "a", false,
-		"Set the colorspace background to the foreground complement")
+		"Set the colorspace background to the foreground complement "+
+			"or something random with minimum contrast (see --contrast)")
 
 	nFlags.BoolVarP(&FlagInventColor, "invent", "I", false,
 		"randomly generate colors (rather than randomly select websafe colors)")

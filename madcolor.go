@@ -15,29 +15,12 @@ import (
 
 var modeClipboardAvailable = false
 
-const MAXATTEMPTS = 100
+// const MAXATTEMPTS = 100
 
-// MINCOLORDISTANCE and MINCONTRAST very tweaky values,
-// colordistance 85.0 / contrast 0.36 */
-const MINCOLORDISTANCE float64 = 85.0
-const MINCONTRAST float64 = 0.36
+var minContrast int = 40
+var minColorDistance int = 30
 
-// main runs the colorize program.
-// It initializes the log file, closes it when done,
-// initializes the command line flags, initializes and
-// opens the input source, initializes and opens the output
-// destination, initializes the HTML color names, and
-// colorizes the input using the colorize function.
-func main() {
-	var br *bufio.Reader
-	var buffw bytes.Buffer
-	var writerList []io.Writer
-
-	// SETUP *****************************
-
-	initLog("madcolor.log")
-	defer closeLog()
-
+func initializeClipboard() {
 	err := clipboard.Init()
 	if nil == err {
 		modeClipboardAvailable = true
@@ -47,6 +30,26 @@ func main() {
 			xLog.Printf("Clipboard not available because %s", err.Error())
 		}
 	}
+}
+
+// main runs the colorize program.
+// It initializes the log file, closes it when done,
+// initializes the command line flags, initializes and
+// opens the input source, initializes and opens the output
+// destination, initializes the HTML color names, and
+// colorizes the input using the colorize function.
+func main() {
+	var br *bufio.Reader
+	var err error
+	var writerList []io.Writer
+	var buffw bytes.Buffer
+
+	// SETUP *****************************
+
+	initLog("madcolor.log")
+	defer closeLog()
+
+	initializeClipboard()
 
 	initFlags()
 
@@ -155,70 +158,39 @@ func getInput() (br *bufio.Reader) {
 func colorize(in *bufio.Reader, out *bufio.Writer) {
 	var r rune
 	var err error = nil
-	var antiColor string
+	var fg, bg, colorName string
+	var w = NewNLVWriter(out)
 
-	_, _ = out.WriteString("<div>")
-
-	colorName, hex := htmlColor.RandomColor(3 * FlagMaxBrightness)
-	_, antiColor = htmlColor.RandomColor(3 * FlagMaxBrightness)
+	w.WriteString("<div>")
 
 	for r, _, err = in.ReadRune(); err == nil; r, _, err = in.ReadRune() {
 
-		_, _ = out.WriteString("<span style=\"color: ")
+		w.WriteString("<span style=\"color: ")
 
 		if FlagInventColor {
-			hex = htmlColor.InventColor(3*FlagMinBrightness, 3*FlagMaxBrightness)
-		} else if FlagDrift {
-			hex = antiColor
+			fg, bg = htmlColor.InventColor(FlagBackgroundColor, minContrast, minColorDistance)
+			colorName = ""
 		} else {
-			colorName, hex = htmlColor.RandomColor(3 * FlagMaxBrightness)
+			colorName, fg = htmlColor.RandomColor(FlagBackgroundColor, minContrast, minColorDistance)
+			bg = FlagBackgroundColor
 		}
-		_, _ = out.WriteString(hex)
 
-		if FlagAntiColor || FlagDrift {
-			var cnt = 0
-			var cd float64
-			var ccr float64
-			if FlagDrift && !FlagInventColor {
-				_, antiColor = htmlColor.RandomColor(3 * FlagMaxBrightness)
-			} else {
-				antiColor = htmlColor.AntiColor(hex)
-			}
+		_, _ = out.WriteString(fg)
 
-			cd, ccr = htmlColor.ColorDistance(hex, antiColor)
-			// check contrast & color differentiation
-
-			for (cd < MINCOLORDISTANCE || ccr < MINCONTRAST) && cnt < MAXATTEMPTS {
-				xLog.Printf("%s vs %s: cd: %12f  ccr: %13f",
-					hex, antiColor, cd, ccr)
-				// if not enough contrast, try again ...
-				if FlagInventColor {
-					antiColor = htmlColor.InventColor(FlagMinBrightness, FlagMaxBrightness)
-				} else {
-					_, antiColor = htmlColor.RandomColor()
-				}
-				cd, ccr = htmlColor.ColorDistance(hex, antiColor)
-				// but not forever!
-				cnt++
-			}
-			if cnt >= MAXATTEMPTS {
-				xLog.Printf(
-					"huh? Could not get a good contrasting color for %s %s (tried %d times!)",
-					colorName, hex, cnt)
-			}
-			_, _ = out.WriteString(";padding: 1px 0px 1px 0px; background-color: ")
-			_, _ = out.WriteString(antiColor)
+		if FlagAntiColor {
+			bg, fg = htmlColor.InventColor(fg, minContrast, minColorDistance)
+			w.WriteString(";padding: 1px 0px; background-color: ")
+			w.WriteString(bg)
 		}
-		_, _ = out.WriteString(";\">")
-		_, _ = out.WriteRune(r)
-		_, _ = out.WriteString("</span>")
+		w.WriteString(";\">")
+		w.WriteRune(r)
+		w.WriteString("</span>")
 		if FlagDebug && FlagVerbose {
-			xLog.Printf("char %c random color %s", r, colorName)
+			if !misc.IsStringSet(&colorName) {
+				colorName = fg
+			}
+			xLog.Printf("char %c background %s foreground %s", r, bg, colorName)
 		}
 	}
-	if err != io.EOF {
-		xLog.Printf("Failed to write colorized string to output because %s", err.Error())
-		myFatal()
-	}
-	_, _ = out.WriteString("</div>\n")
+	w.WriteString("</div>\n")
 }
