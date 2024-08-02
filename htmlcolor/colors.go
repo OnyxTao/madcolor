@@ -13,11 +13,13 @@ import (
 	"madcolor/misc"
 )
 
-var modeDebug = false
+// var modeDebug = false
 
-const regExpHexB = "[\\da-fA-F]{2}"
-const regExpHex6 = "#?([\\da-fA-F]{6})"
+const regExpHexB = "[\\da-fA-F]{2}"     // match 2-digit hex byte (only)
+const regExpHex6 = "#?([\\da-fA-F]{6})" // match 6-digit hex value (submatch the hex)
 const regExpHex3 = "#?([\\da-fA-F])([\\da-fA-F])([\\da-fA-F])"
+
+// match 3-digit hex value, submatch each 4-byte digit
 
 var rxHexB *regexp.Regexp
 var rxHex6 *regexp.Regexp
@@ -182,11 +184,12 @@ func randColorBytes() (sum, r, g, b int) {
 }
 
 func hexByteToInt(hex string) (val int) {
-	if modeDebug {
-		if !rxHexB.MatchString(hex) {
-			panic("hex byte conversion failed for " + hex)
-		}
+
+	// paranoia check. can remove in 2025.
+	if !rxHexB.MatchString(hex) {
+		panic("hex byte conversion failed for " + hex)
 	}
+
 	i, err := strconv.ParseInt(hex, 16, 32)
 	if err != nil {
 		msg := fmt.Sprintf("huh? could not convert %s into an int because %s", hex, err.Error())
