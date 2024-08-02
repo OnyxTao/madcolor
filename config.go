@@ -43,7 +43,6 @@ var FlagInput string
 var FlagClip bool
 var FlagStdout bool
 var FlagPipe bool
-
 var FlagDistance int8 = 20
 
 // initFlags initializes the command line flags for the program.
@@ -81,7 +80,10 @@ func initFlags() {
 
 	// program flags
 
-	nFlags.Int8VarP(&FlagContrast, "contrast", "c", 350,
+	nFlags.Int8VarP(&FlagContrast, "contrast", "c", int8(minContrast),
+		"minimum relative contrast between foreground and background")
+
+	nFlags.Int8VarP(&FlagDistance, "distance", "D", int8(minColorDistance),
 		"minimum relative contrast between foreground and background")
 
 	nFlags.StringVarP(&FlagBackgroundColor, "background-color", "b", "white",
@@ -97,9 +99,6 @@ func initFlags() {
 
 	nFlags.BoolVarP(&FlagClip, "nopaste", "", true,
 		"Suppress paste of buffer to clipboard (if clipboard is available)")
-
-	nFlags.BoolVarP(&FlagDrift, "drift", "", false,
-		"Drift mode uses the previous background as the new foreground")
 
 	nFlags.BoolVarP(&FlagAntiColor, "anti", "a", false,
 		"Set the colorspace background to the foreground complement "+
@@ -206,7 +205,7 @@ func initFlags() {
 
 	// Override the default TRUE setting for FlagStdout iff FlagStdout was not set by user
 	if misc.IsStringSet(&FlagOutput) && !nFlags.Changed("stdout") {
-		flagSet("sdtout", "false")
+		flagSet("stdout", "false")
 	}
 
 	if !misc.IsStringSet(&FlagOutput) && !FlagClip {

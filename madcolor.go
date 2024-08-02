@@ -17,8 +17,8 @@ var modeClipboardAvailable = false
 
 // const MAXATTEMPTS = 100
 
-var minContrast int = 40
-var minColorDistance int = 30
+var minContrast int8 = 60
+var minColorDistance int8 = 33
 
 func initializeClipboard() {
 	err := clipboard.Init()
@@ -39,10 +39,9 @@ func initializeClipboard() {
 // destination, initializes the HTML color names, and
 // colorizes the input using the colorize function.
 func main() {
-	var br *bufio.Reader
 	var err error
 	var writerList []io.Writer
-	var buffw bytes.Buffer
+	var clipboardBuffer bytes.Buffer
 
 	// SETUP *****************************
 
@@ -55,29 +54,40 @@ func main() {
 
 	htmlColor.Initialize()
 
-	// LOGIC *************************
-
-	br = getInput()
+	br := getInput()
 
 	f := getOutput()
 	defer misc.DeferError(f.Close)
 	writerList = append(writerList, f)
 
 	if FlagClip {
-		buffw.Grow(16 * 1024)
-		writerList = append(writerList, &buffw)
+		clipboardBuffer.Grow(16 * 1024)
+		writerList = append(writerList, &clipboardBuffer)
+	}
+
+	if FlagDebug {
+		f, err := os.Open("debug_madcolor_out.log")
+		if err != nil {
+			xLog.Printf("could not open debug_madcolor_out.log because: %s", err)
+			myFatal()
+		}
+		defer misc.DeferError(f.Close)
+		writerList = append(writerList, f)
 	}
 
 	mw := bufio.NewWriter(io.MultiWriter(writerList...))
 	colorize(br, mw)
-
 	err = mw.Flush()
 	if nil != err {
-		xLog.Printf("Could not flush bytes from buffered multiwriter because %s", err.Error())
+		xLog.Printf("huh? Could not flush bytes from buffered multiwriter because %s",
+			err.Error())
+		myFatal()
 	}
+
 	if FlagClip {
-		_ = clipboard.Write(clipboard.FmtText, buffw.Bytes())
+		_ = clipboard.Write(clipboard.FmtText, clipboardBuffer.Bytes())
 	}
+
 }
 
 // getOutput returns a *os.File that represents the output destination.
@@ -158,8 +168,28 @@ func getInput() (br *bufio.Reader) {
 func colorize(in *bufio.Reader, out *bufio.Writer) {
 	var r rune
 	var err error = nil
-	var fg, bg, colorName string
+	var fg, bg string
 	var w = NewNLVWriter(out)
+	var colorName = ""
+
+	// figure out the background color if not FlagAnticolor
+	if !FlagAntiColor && !misc.IsStringSet(&FlagBackgroundColor) {
+		err = nil
+		if FlagInventColor {
+			bg = htmlColor.RandColor()
+			err = nFlags.Set("background-color", bg)
+		} else {
+			_, colorName, bg = htmlColor.RandNamedColor()
+			err = nFlags.Set("background-color", colorName)
+		}
+		xLog.Printf("warning: FlagBackgroundColor was unset. "+
+			"Should not happen! Creating a default background color ... %s %s",
+			bg, colorName)
+		if nil != err {
+			xLog.Printf("Failed to set background-color color flag because %s", err.Error())
+			myFatal()
+		}
+	}
 
 	w.WriteString("<div>")
 
@@ -167,26 +197,32 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 
 		w.WriteString("<span style=\"color: ")
 
-		if FlagInventColor {
-			fg, bg = htmlColor.InventColor(FlagBackgroundColor, minContrast, minColorDistance)
-			colorName = ""
-		} else {
-			colorName, fg = htmlColor.RandomColor(FlagBackgroundColor, minContrast, minColorDistance)
-			bg = FlagBackgroundColor
+		if FlagAntiColor {
+			if FlagInventColor {
+				bg = htmlColor.RandColor()
+			} else {
+				_, _, bg = htmlColor.RandNamedColor()
+			}
 		}
 
-		_, _ = out.WriteString(fg)
+		if FlagInventColor {
+			fg, _ = htmlColor.InventColor(bg, minContrast, minColorDistance)
+		} else {
+			colorName, fg = htmlColor.RandomColor(bg, minContrast, minColorDistance)
+		}
+
+		w.WriteString(fg)
 
 		if FlagAntiColor {
-			bg, fg = htmlColor.InventColor(fg, minContrast, minColorDistance)
-			w.WriteString(";padding: 1px 0px; background-color: ")
+			w.WriteString("; padding: 1px 0px; background-color: ")
 			w.WriteString(bg)
 		}
+
 		w.WriteString(";\">")
 		w.WriteRune(r)
 		w.WriteString("</span>")
 		if FlagDebug && FlagVerbose {
-			if !misc.IsStringSet(&colorName) {
+			if FlagInventColor {
 				colorName = fg
 			}
 			xLog.Printf("char %c background %s foreground %s", r, bg, colorName)

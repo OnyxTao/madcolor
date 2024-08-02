@@ -1,4 +1,4 @@
-# Madcolor
+# MADCOLOR
 
 Set each glyph in a text string with a randomly selected color with the
 total brightness of the color less than 160*3 (dark enough
@@ -12,7 +12,7 @@ clipboard, if supported.
 `madcolor` can function as a pipe (read from `STDIN`, write to `STDOUT`) with `--pipe`
 
 Unless `--invent` is specified, the random colors are selected
-from a preexisting list of HTML colors (presently the websafe
+from a preexisting list of HTML colors (presently the web-safe
 colors &amp; and the PANTONE colors-of-the-year approximations)
 
 Create a logfile `madcolor.log` in the working directory; all error
@@ -21,10 +21,13 @@ suppresses this output to stderr (it does not suppress logfile output).
 
 Relative Luminance is used to calculate and determine contrast. There is
 a minimum color distance (as grays have distracting/confusing contrast levels)
+as well. Flags to set these exist, but have not had any serious testing; the
+resulting color combinations (or colors against the supplied background) are
+tested for a minimum level of contrast. The defaults appear to work well.
 
 ## INSTALLING
 Prerequisites:
-* `git` installed and configured with github credentials
+* `git` installed and configured with GitHub credentials
 * working GO compiler
 * `GOPATH` environment variable correctly set
 
@@ -62,7 +65,7 @@ will (and should) differ.
 * ~~Output file option?~~
   * Done see `--output`
 * Add usage() directions
-* Create an external colorlist option?
+* Create an external color list option?
   * Check for madcolor.csv?
 * force color of whitespace (default white)?
   * TODO as `--whitespace <string>` where string matches a hex color identifier or name`
@@ -85,12 +88,12 @@ contrast.
 #### -b, --background-color
 Assume the background color (for contrast calculation). Takes a string
 which may be either a six-digit hex value (such as "#AA3388") or the
-name of a webcolor. All web-safe colors are accepted, as well as some
+name of a web color. All web-safe colors are accepted, as well as some
 other pantone and other color names. If a color name is unrecognized,
 the program terminates. A string matching the regular expression:
 `#?([\da-fA-F]{6}|?[\da-fA-F]{3})`
 to be a hex value. A three-digit hex string is ALWAYS expanded
-to a six digit hexstring by doubling the hex digit. `#1D8` is
+to a six digit string by doubling the hex digit. `#1D8` is
 equivalent to `#11DD88`.
 
 #### -c, --contrast
