@@ -15,11 +15,14 @@ import (
 
 // var modeDebug = false
 
-const regExpHexB = "[\\da-fA-F]{2}"     // match 2-digit hex byte (only)
-const regExpHex6 = "#?([\\da-fA-F]{6})" // match 6-digit hex value (submatch the hex)
-const regExpHex3 = "#?([\\da-fA-F])([\\da-fA-F])([\\da-fA-F])"
+// regExpHexB match 2-digit hex byte (only)
+const regExpHexB = "[\\da-fA-F]{2}"
 
-// match 3-digit hex value, submatch each 4-byte digit
+// regExpHex6 match 6-digit hex value (submatch the hex)
+const regExpHex6 = "#?([\\da-fA-F]{6})"
+
+// regExpHex3 match 3-digit hex value, submatch each 4-byte digit
+const regExpHex3 = "#?([\\da-fA-F])([\\da-fA-F])([\\da-fA-F])"
 
 var rxHexB *regexp.Regexp
 var rxHex6 *regexp.Regexp
