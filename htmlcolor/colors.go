@@ -14,7 +14,7 @@ import (
 	"madcolor/misc"
 )
 
-var modeDebug = true
+var modeDebug = false
 
 const regExpHexB = "[\\da-fA-F]{2}"
 const regExpHex6 = "#?([\\da-fA-F]{6})"
@@ -46,6 +46,7 @@ var setup = false
 // and assigns it to rxHex variable.
 //
 // This function does not return any values.
+// The optional options uses the first boolean to set modeDebug.
 func Initialize(options ...bool) {
 	setupLock.Lock()
 	defer setupLock.Unlock()

@@ -52,7 +52,7 @@ func main() {
 
 	initFlags()
 
-	htmlColor.Initialize()
+	htmlColor.Initialize(FlagDebug)
 
 	br := getInput()
 
