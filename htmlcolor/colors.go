@@ -170,7 +170,7 @@ func relativeLuminance(rgb ...uint8) (rl float64) {
 	return (0.2126 * RGB[0]) + (0.7152 * RGB[1]) + (0.0722 * RGB[2])
 }
 
-func InventColor(backColor string, minContrast int8, minDistance int8) (fg, bg string) {
+func InventColor(backColor string, minContrast int, minDistance int) (fg, bg string) {
 	var contrast = float64(minContrast) / 100.0
 	var distance = float64(float64(3*0xFF)*float64(minDistance)) / 100.0
 	var cnt, dst float64
@@ -266,7 +266,7 @@ func ColorDistance(a string, b string) (dist float64, contrast float64) {
 
 }
 
-func RandomColor(bg string, contrast int8, distance int8) (name string, hex string) {
+func RandomColor(bg string, contrast int, distance int) (name string, hex string) {
 	var ok bool
 
 	minContrast := float64(contrast) / 100

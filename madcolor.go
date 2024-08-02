@@ -17,8 +17,10 @@ var modeClipboardAvailable = false
 
 // const MAXATTEMPTS = 100
 
-var minContrast int8 = 60
-var minColorDistance int8 = 33
+const DEBUGTEXTLOG = "madcolorDebugText.log"
+
+var minContrast = 60
+var minColorDistance = 33
 
 func initializeClipboard() {
 	err := clipboard.Init()
@@ -66,9 +68,9 @@ func main() {
 	}
 
 	if FlagDebug {
-		f, err := os.Open("debug_madcolor_out.log")
+		f, err := os.Open(DEBUGTEXTLOG)
 		if err != nil {
-			xLog.Printf("could not open debug_madcolor_out.log because: %s", err)
+			xLog.Printf("could not open %s because: %s", DEBUGTEXTLOG, err)
 			myFatal()
 		}
 		defer misc.DeferError(f.Close)
@@ -110,7 +112,7 @@ func getOutput() (f *os.File) {
 		fn = path.Join(FlagOutputDir, FlagOutput)
 		f, err = os.Create(fn)
 		if err != nil {
-			xLog.Printf("Could not open %s because %s", fn, err.Error())
+			xLog.Printf("Could not open file %s because %s", fn, err.Error())
 			myFatal()
 		}
 	} else {
@@ -145,26 +147,28 @@ func getInput() (br *bufio.Reader) {
 	return bufio.NewReader(strings.NewReader(FlagText))
 }
 
-// colorize applies colors to characters read from the input reader
-// and writes the colorized output to the output writer. It generates
-// a random color and its hexadecimal representation using
-// htmlColor.RandomColor. If FlagInventColor is set, it
-// generates an invented color in the specified brightness range using
-// htmlColor.InventColor. If the FlagDrift is set, it uses the
-// antiColor generated in the previous iteration. Otherwise, it
-// generates a new random color and its hexadecimal representation.
-// If the FlagAntiColor is set, it generates an antiColor using
-// htmlColor.AntiColor and checks the contrast and color differentiation.
-// If the generated antiColor does not have enough contrast or color
-// differentiation, it generates a new one. The function writes the color
-// span tag and the colorized character to the output writer. If FlagDebug
-// and FlagVerbose are set, it logs the random color for each character.
-// The function stops reading if it encounters an error other than io.EOF
-// and logs the error.
+// colorize applies color to each character read from the input.
+// It calculates the background color if FlagBackgroundColor is not set,
+// using a random color or a random named color from the htmlColor package.
+// It then generates a foreground color that has enough contrast and distance
+// from the background color.
+// If FlagAntiColor is set, it generates a random background color for each character.
+// It writes the colorized text to the output using the NLVWriter type.
+// It wraps the colorized text in `<div>` tags.
 //
 // Parameters:
-// - in: the input reader from which characters are read
-// - out: the output writer to which colorized output is written
+// - in: Input reader for reading characters
+// - out: Output writer for writing colorized text
+//
+// Variables:
+// - r: Represents each character read from the input (rune type)
+// - err: Error returned from reading characters from the input
+// - fg: Foreground color string
+// - bg: Background color string
+// - w: Writer that writes the colorized text to the output
+// - colorName: Name of the generated foreground color
+//
+// Returns: None
 func colorize(in *bufio.Reader, out *bufio.Writer) {
 	var r rune
 	var err error = nil
@@ -221,12 +225,6 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 		w.WriteString(";\">")
 		w.WriteRune(r)
 		w.WriteString("</span>")
-		if FlagDebug && FlagVerbose {
-			if FlagInventColor {
-				colorName = fg
-			}
-			xLog.Printf("char %c background %s foreground %s", r, bg, colorName)
-		}
 	}
 	w.WriteString("</div>\n")
 }
