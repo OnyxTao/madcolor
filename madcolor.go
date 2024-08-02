@@ -54,8 +54,6 @@ func main() {
 
 	initFlags()
 
-	htmlColor.Initialize(FlagDebug)
-
 	br := getInput()
 
 	f := getOutput()

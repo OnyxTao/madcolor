@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 
 	"madcolor/misc"
 )
@@ -30,47 +29,22 @@ type htmlColor struct {
 }
 
 var htmlColorArray []htmlColor
-var setupLock sync.Mutex
-var setup = false
 
-// Initialize initializes the package by setting up the necessary variables and data.
-// It acquires a lock to ensure exclusive access while setting up.
-// If the setup has already been done, the function returns early.
-// If setup is in progress, the new caller waits until setup is complete to exit the function.
-// The function populates the htmlColorArray with color names, hexadecimal values,
-// and darkness values obtained from the ColorNames map. It calculates the darkness
-// value using the getDarkness function.
-//
-// If the array exceeds the length of ColorNames, the function panics with an error message.
-// The function also compiles the regular expression pattern for a hexadecimal string
-// and assigns it to rxHex variable.
-//
-// This function does not return any values.
-// The optional options uses the first boolean to set modeDebug.
-func Initialize(options ...bool) {
-	setupLock.Lock()
-	defer setupLock.Unlock()
-	if setup { // the goal is that after returning from Initialize, we're initialized
-		return
-	}
-	setup = true
-
-	if len(options) > 0 {
-		modeDebug = options[0]
-	}
-
+// init is a function that is automatically called before the main function at the start of program execution.
+// It initializes the regular expression patterns rxHexB, rxHex6, and rxHex3 with their corresponding regular expression strings.
+// It also initializes the htmlColorArray with the ColorNames map values, randomly filling the array.
+// This function does not return any value.
+func init() {
 	rxHexB = regexp.MustCompile(regExpHexB)
 	rxHex6 = regexp.MustCompile(regExpHex6)
 	rxHex3 = regexp.MustCompile(regExpHex3)
 	htmlColorArray = make([]htmlColor, len(ColorNames), len(ColorNames))
 	ix := 0
+	// this fills the array randomly. Doesn't matter for our purposes.
 	for key, val := range ColorNames {
 		htmlColorArray[ix].name = key
 		htmlColorArray[ix].hex = val
 		ix++
-		if ix > len(ColorNames) {
-			panic("array overflow in HtmlColorsSetup")
-		}
 	}
 }
 
@@ -93,10 +67,6 @@ func Initialize(options ...bool) {
 // indicating if the conversion was successful or not.
 func StringToColor(s string) (hex string, ok bool) {
 	var sb strings.Builder
-
-	if !setup {
-		Initialize()
-	}
 
 	if rxHex6.MatchString(s) {
 		zx := rxHex6.FindSubmatch([]byte(s))
