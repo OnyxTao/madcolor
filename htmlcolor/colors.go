@@ -14,6 +14,7 @@ import (
 )
 
 // var modeDebug = false
+var htmlColorArrayLength *big.Int
 
 // regExpHexB match 2-digit hex byte (only)
 const regExpHexB = "[\\da-fA-F]{2}"
@@ -40,17 +41,39 @@ var htmlColorArray []htmlColor
 // It also initializes the htmlColorArray with the ColorNames map values, randomly filling the array.
 // This function does not return any value.
 func init() {
+	htmlColorArrayLength = big.NewInt(int64(len(ColorNames)))
 	rxHexB = regexp.MustCompile(regExpHexB)
 	rxHex6 = regexp.MustCompile(regExpHex6)
 	rxHex3 = regexp.MustCompile(regExpHex3)
-	htmlColorArray = make([]htmlColor, len(ColorNames), len(ColorNames))
-	ix := 0
+	htmlColorArray = make([]htmlColor, 0, len(ColorNames))
+	invertArray := make(map[string]string, len(ColorNames))
+
+	// terminate := false
 	// this fills the array randomly. Doesn't matter for our purposes.
 	for key, val := range ColorNames {
-		htmlColorArray[ix].name = key
-		htmlColorArray[ix].hex = val
-		ix++
+		// dup, ok := invertArray[val]
+		_, ok := invertArray[val]
+		if ok { // report & ignore duplicate colors
+			// this print statement is for MAINTENANCE,
+			// to ease adding new colors. IT IS NOT MEANT
+			// PRODUCTION USE.
+			/*
+				terminate = true
+				fmt.Fprintf(os.Stderr,
+					"duplicate color hex %s has names %s and %s\n",
+					val, dup, key)
+			*/
+			continue
+		}
+		invertArray[val] = key
+		tmp := htmlColor{name: key, hex: val}
+		htmlColorArray = append(htmlColorArray, tmp)
 	}
+	/*****
+	if terminate {
+		os.Exit(1)
+	}
+	***********/
 }
 
 // StringToColor takes a string and converts it to a hexadecimal color value.
@@ -255,8 +278,7 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 		}
 	}
 
-	var arrayLen = big.NewInt(int64(len(ColorNames)))
-	ixBig, _ := rand.Int(rand.Reader, arrayLen)
+	ixBig, _ := rand.Int(rand.Reader, htmlColorArrayLength)
 	ixStart := int(ixBig.Int64())
 	ix := ixStart
 

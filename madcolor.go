@@ -170,9 +170,10 @@ func getInput() (br *bufio.Reader) {
 func colorize(in *bufio.Reader, out *bufio.Writer) {
 	var r rune
 	var err error = nil
-	var fg, bg string
 	var w = NewNLVWriter(out)
-	var colorName = ""
+	var fg, bg, colorName string
+
+	bg = FlagBackgroundColor
 
 	// figure out the background color if not FlagAnticolor
 	if !FlagAntiColor && !misc.IsStringSet(&FlagBackgroundColor) {
@@ -216,7 +217,7 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 		w.WriteString(fg)
 
 		if FlagAntiColor {
-			w.WriteString("; padding: 1px 0px; background-color: ")
+			w.WriteString("; padding: 0px 0px 1px 0px; background-color: ")
 			w.WriteString(bg)
 		}
 
