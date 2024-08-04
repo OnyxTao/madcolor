@@ -54,6 +54,10 @@ func main() {
 
 	initFlags()
 
+	if !FlagInventColor && !nFlags.Changed("contrast") {
+		FlagContrast += 10
+	}
+
 	br := getInput()
 
 	f := getOutput()

@@ -1,6 +1,7 @@
 package htmlcolors
 
 import (
+	"bufio"
 	"crypto/rand"
 	"fmt"
 	"math"
@@ -36,17 +37,22 @@ type htmlColor struct {
 
 var htmlColorArray []htmlColor
 
+// buffRandReader buffers the many small calls to
+// crypto/Rand.reader.
+var buffRandReader *bufio.Reader
+
 // init is a function that is automatically called before the main function at the start of program execution.
 // It initializes the regular expression patterns rxHexB, rxHex6, and rxHex3 with their corresponding regular expression strings.
 // It also initializes the htmlColorArray with the ColorNames map values, randomly filling the array.
 // This function does not return any value.
 func init() {
-	htmlColorArrayLength = big.NewInt(int64(len(ColorNames)))
+
 	rxHexB = regexp.MustCompile(regExpHexB)
 	rxHex6 = regexp.MustCompile(regExpHex6)
 	rxHex3 = regexp.MustCompile(regExpHex3)
 	htmlColorArray = make([]htmlColor, 0, len(ColorNames))
 	invertArray := make(map[string]string, len(ColorNames))
+	buffRandReader = bufio.NewReaderSize(rand.Reader, 16*1024)
 
 	for key, val := range ColorNames {
 		_, ok := invertArray[val]
@@ -57,6 +63,7 @@ func init() {
 		tmp := htmlColor{name: key, hex: val}
 		htmlColorArray = append(htmlColorArray, tmp)
 	}
+	htmlColorArrayLength = big.NewInt(int64(len(htmlColorArray)))
 }
 
 /************************** production version */
@@ -93,7 +100,6 @@ func init() {
 *****************************/
 
 // StringToColor takes a string and converts it to a hexadecimal color value.
-// It first checks if the setup has been done by calling the Initialize function.
 // If the string matches a 6-digit hexadecimal pattern, it extracts the digits
 // and returns the corresponding color value in the format "#RRGGBB". If the string
 // matches a 3-digit hexadecimal pattern, it duplicates each digit and returns
@@ -104,8 +110,8 @@ func init() {
 //
 // The function relies on the rxHex6 and rxHex3 regular expression patterns for
 // validating the hexadecimal strings. The function also converts the input string
-// to lowercase before processing. The function uses a strings.Builder to efficiently
-// build the resulting color value by appending characters.
+// to lowercase before processing. The function uses a strings.Builder to build
+// the resulting color value by appending characters.
 //
 // This function returns the hexadecimal color value as a string and a boolean flag
 // indicating if the conversion was successful or not.
@@ -278,7 +284,6 @@ func ColorDistance(a string, b string) (dist float64, contrast float64) {
 			math.Pow(float64(aBlue-bBlue), 2.0))
 
 	return dist, contrast
-
 }
 
 func RandomColor(bg string, contrast int, distance int) (name string, hex string) {
@@ -294,7 +299,7 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 		}
 	}
 
-	ixBig, _ := rand.Int(rand.Reader, htmlColorArrayLength)
+	ixBig, _ := rand.Int(buffRandReader, htmlColorArrayLength)
 	ixStart := int(ixBig.Int64())
 	ix := ixStart
 
@@ -316,8 +321,9 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 	return htmlColorArray[ix].name, htmlColorArray[ix].hex
 }
 
+// using crypto/rand for good(?) random numbers ...
 func RandNamedColor() (ix int, name, hex string) {
-	ixBig, err := rand.Int(rand.Reader, big.NewInt(int64(len(htmlColorArray))))
+	ixBig, err := rand.Int(buffRandReader, big.NewInt(int64(len(htmlColorArray))))
 	if nil != err {
 		msg := fmt.Sprintf(
 			"huh? Failed to generate a big.Int from %d (len of ColorNames array) because %s",
