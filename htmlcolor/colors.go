@@ -40,6 +40,7 @@ var htmlColorArray []htmlColor
 // It initializes the regular expression patterns rxHexB, rxHex6, and rxHex3 with their corresponding regular expression strings.
 // It also initializes the htmlColorArray with the ColorNames map values, randomly filling the array.
 // This function does not return any value.
+/*
 func init() {
 	htmlColorArrayLength = big.NewInt(int64(len(ColorNames)))
 	rxHexB = regexp.MustCompile(regExpHexB)
@@ -48,33 +49,48 @@ func init() {
 	htmlColorArray = make([]htmlColor, 0, len(ColorNames))
 	invertArray := make(map[string]string, len(ColorNames))
 
-	// terminate := false
-	// this fills the array randomly. Doesn't matter for our purposes.
 	for key, val := range ColorNames {
-		// dup, ok := invertArray[val]
 		_, ok := invertArray[val]
 		if ok { // report & ignore duplicate colors
-			// this print statement is for MAINTENANCE,
-			// to ease adding new colors. IT IS NOT MEANT
-			// PRODUCTION USE.
-			/*
-				terminate = true
-				fmt.Fprintf(os.Stderr,
-					"duplicate color hex %s has names %s and %s\n",
-					val, dup, key)
-			*/
 			continue
 		}
 		invertArray[val] = key
 		tmp := htmlColor{name: key, hex: val}
 		htmlColorArray = append(htmlColorArray, tmp)
 	}
-	/*****
+}
+/************************** production version */
+/************************** maintenance version */
+
+func init() {
+	htmlColorArrayLength = big.NewInt(int64(len(ColorNames)))
+	rxHexB = regexp.MustCompile(regExpHexB)
+	rxHex6 = regexp.MustCompile(regExpHex6)
+	rxHex3 = regexp.MustCompile(regExpHex3)
+	htmlColorArray = make([]htmlColor, 0, len(ColorNames))
+	invertArray := make(map[string]string, len(ColorNames))
+
+	terminate := false
+	// this fills the array randomly. Doesn't matter for our purposes.
+	for key, val := range ColorNames {
+		dup, ok := invertArray[val]
+		if ok { // report & ignore duplicate colors
+			terminate = true
+			fmt.Fprintf(os.Stderr,
+				"duplicate color hex %s has names %s and %s\n",
+				val, dup, key)
+			continue
+		}
+		invertArray[val] = key
+		tmp := htmlColor{name: key, hex: val}
+		htmlColorArray = append(htmlColorArray, tmp)
+	}
 	if terminate {
 		os.Exit(1)
 	}
-	***********/
 }
+
+/*****************************/
 
 // StringToColor takes a string and converts it to a hexadecimal color value.
 // It first checks if the setup has been done by calling the Initialize function.

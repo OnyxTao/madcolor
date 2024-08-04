@@ -12,8 +12,9 @@ clipboard, if supported.
 `madcolor` can function as a pipe (read from `STDIN`, write to `STDOUT`) with `--pipe`
 
 Unless `--invent` is specified, the random colors are selected
-from a preexisting list of HTML colors (presently the web-safe
-colors &amp; and the PANTONE colors-of-the-year approximations)
+from a preexisting list of HTML colors drawn from web sources,
+starting with web-safe and some other colors such as PANTONE
+color of the year and other sources.
 
 Create a logfile `madcolor.log` in the working directory; all error
 and verbose information is written to stderr and the logfile. `--quiet`
