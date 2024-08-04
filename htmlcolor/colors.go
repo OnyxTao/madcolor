@@ -317,7 +317,7 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 }
 
 func RandNamedColor() (ix int, name, hex string) {
-	ixBig, err := rand.Int(rand.Reader, big.NewInt(int64(len(ColorNames))))
+	ixBig, err := rand.Int(rand.Reader, big.NewInt(int64(len(htmlColorArray))))
 	if nil != err {
 		msg := fmt.Sprintf(
 			"huh? Failed to generate a big.Int from %d (len of ColorNames array) because %s",
