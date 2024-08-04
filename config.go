@@ -44,6 +44,7 @@ var FlagClip bool
 var FlagStdout bool
 var FlagPipe bool
 var FlagDistance int8 = 20
+var FlagClipboardBuffer bool
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -88,6 +89,9 @@ func initFlags() {
 
 	nFlags.StringVarP(&FlagBackgroundColor, "background-color", "b", "white",
 		"Background color. Ignored for --anti.")
+
+	nFlags.BoolVarP(&FlagClipboardBuffer, "buff", "", false,
+		"buffer mode -- convert text in the clipboard buffer")
 
 	nFlags.BoolVarP(&FlagPipe, "pipe", "p", false,
 		"Pipe mode; read from STDIN, write to STDOUT, all other io disabled.")
@@ -137,9 +141,14 @@ func initFlags() {
 			os.Args)
 	}
 
+	if FlagClipboardBuffer {
+		flagSet("nopaste", "false")
+		flagSet("pipe", "false")
+		flagSet("input", "")
+	}
+
 	if FlagPipe {
 		flagSet("stdout", "true")
-		flagSet("stderr", "false")
 		flagSet("input", "")
 		flagSet("output", "")
 		flagSet("quiet", "true")
@@ -240,7 +249,10 @@ func UsageMessage() {
 	xLog.Printf("Useful Information Here")
 }
 
-func flagSet(flag, val string) {
+// flagSet sets the value of a flag in the given flag set.
+// If an error occurs while setting the flag value, it logs an error message
+// using the xLog package and calls the myFatal function.
+func flagSet(flag string, val string) {
 	err := nFlags.Set(flag, val)
 	if nil != err {
 		xLog.Printf("huh? Could not set Flag [%s] to [%s] because %s",

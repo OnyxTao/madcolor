@@ -54,6 +54,8 @@ will (and should) differ.
 * ~~random background color~~
   * Done, see `--anti`
 * ~~Complementary background color?~~
+* ~~Convert directly from clipboard input?~~
+  * Done, see `--buff`
 * ~~Select darkness / brightness levels?~~
   * Done, see `--max` and `--min`
 * Add more colors?
@@ -96,6 +98,10 @@ the program terminates. A string matching the regular expression:
 to be a hex value. A three-digit hex string is ALWAYS expanded
 to a six digit string by doubling the hex digit. `#1D8` is
 equivalent to `#11DD88`.
+
+#### -buff
+Colorize clipboard contents. Output is placed back in the clipboard,
+and written to `STDOUT` (by default).
 
 #### -c, --contrast
 This defines the minimum contrast between foreground and

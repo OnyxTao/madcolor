@@ -123,15 +123,6 @@ func getOutput() (f *os.File) {
 	return f
 }
 
-// getInput returns a *bufio.Reader that reads from either the
-// file specified by the `FlagInput` variable or from a string
-// specified by the `FlagText` variable. If the `FlagInput` variable
-// is set, `getInput` opens the file and creates a `bufio.Reader` to
-// read from it. If opening the file encounters an error, it logs
-// the error message using `xLog.Printf` and calls `myFatal` to exit
-// the program. If the `FlagInput` variable is not set, `getInput`
-// creates a `bufio.Reader` to read from the string specified by the
-// `FlagText` variable. The `bufio.Reader` is then returned.
 func getInput() (br *bufio.Reader) {
 	if FlagPipe {
 		return bufio.NewReader(os.Stdin)
@@ -144,6 +135,12 @@ func getInput() (br *bufio.Reader) {
 			myFatal()
 		}
 		return bufio.NewReader(f)
+	}
+
+	if FlagClipboardBuffer {
+		b := clipboard.Read(clipboard.FmtText)
+		nr := bytes.NewReader(b)
+		return bufio.NewReader(nr)
 	}
 
 	return bufio.NewReader(strings.NewReader(FlagText))
@@ -198,7 +195,7 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 		}
 	}
 
-	w.WriteString("<div>")
+	w.WriteString("<span>")
 
 	for r, _, err = in.ReadRune(); err == nil; r, _, err = in.ReadRune() {
 
@@ -229,5 +226,5 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 		w.WriteRune(r)
 		w.WriteString("</span>")
 	}
-	w.WriteString("</div>\n")
+	w.WriteString("</span>\n")
 }
