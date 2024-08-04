@@ -40,7 +40,6 @@ var htmlColorArray []htmlColor
 // It initializes the regular expression patterns rxHexB, rxHex6, and rxHex3 with their corresponding regular expression strings.
 // It also initializes the htmlColorArray with the ColorNames map values, randomly filling the array.
 // This function does not return any value.
-/*
 func init() {
 	htmlColorArrayLength = big.NewInt(int64(len(ColorNames)))
 	rxHexB = regexp.MustCompile(regExpHexB)
@@ -51,7 +50,7 @@ func init() {
 
 	for key, val := range ColorNames {
 		_, ok := invertArray[val]
-		if ok { // report & ignore duplicate colors
+		if ok { // ignore duplicate colors -- use maintenance init to detect them
 			continue
 		}
 		invertArray[val] = key
@@ -59,8 +58,10 @@ func init() {
 		htmlColorArray = append(htmlColorArray, tmp)
 	}
 }
+
 /************************** production version */
-/************************** maintenance version */
+
+/************************** maintenance version *
 
 func init() {
 	htmlColorArrayLength = big.NewInt(int64(len(ColorNames)))
@@ -76,7 +77,7 @@ func init() {
 		dup, ok := invertArray[val]
 		if ok { // report & ignore duplicate colors
 			terminate = true
-			fmt.Fprintf(os.Stderr,
+			_, _ = fmt.Fprintf(os.Stderr,
 				"duplicate color hex %s has names %s and %s\n",
 				val, dup, key)
 			continue
@@ -89,8 +90,7 @@ func init() {
 		os.Exit(1)
 	}
 }
-
-/*****************************/
+*****************************/
 
 // StringToColor takes a string and converts it to a hexadecimal color value.
 // It first checks if the setup has been done by calling the Initialize function.

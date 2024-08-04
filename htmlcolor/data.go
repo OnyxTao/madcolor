@@ -28,7 +28,6 @@ var ColorNames = map[string]string{
 	"burlywood":            "#deb887",
 	"cadetblue":            "#5f9ea0",
 	"chartreuse":           "#7fff00",
-	"chocolate":            "#d2691e",
 	"coral":                "#ff7f50",
 	"cornflowerblue":       "#6495ed",
 	"cornsilk":             "#fff8dc",
@@ -512,7 +511,6 @@ var ColorNames = map[string]string{
 	"pearl":                    "#fdeef4",
 	"milk white":               "#fefcff",
 	"inkwell":                  "#363945",
-	"ultimate gray":            "#939597",
 	"buttercream":              "#efe1ce",
 	"desert mist":              "#e0b589",
 	"willow":                   "#9a8b4f",
@@ -601,6 +599,7 @@ var ColorNames = map[string]string{
 	"golden lime":              "#9c9a40",
 	"marina":                   "#4f84c4",
 	"autumn maple":             "#d2691e",
+	"chocolate":                "#d2691e", // yes, this is an alternate color name
 	"peach echo":               "#f7786b",
 	"snorkel blue":             "#034f84",
 	"limpet shell":             "#98ddde",
