@@ -94,10 +94,10 @@ which may be either a six-digit hex value (such as "#AA3388") or the
 name of a web color. All web-safe colors are accepted, as well as some
 other pantone and other color names. If a color name is unrecognized,
 the program terminates. A string matching the regular expression:
-`#?([\da-fA-F]{6}|?[\da-fA-F]{3})`
-to be a hex value. A three-digit hex string is ALWAYS expanded
-to a six digit string by doubling the hex digit. `#1D8` is
-equivalent to `#11DD88`.
+`#?([\da-fA-F]{6}|?[\da-fA-F]{3})` is interpreted as a hex color value. 
+A three-digit hex string is expanded to a six digit string by doubling
+the hex digit per the W3 recommendation
+[https://www.w3.org/TR/css-color-3 _section 4.2.1_](https://www.w3.org/TR/css-color-3/#numerical).
 
 #### -buff
 Colorize clipboard contents. Output is placed back in the clipboard,
