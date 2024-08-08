@@ -45,6 +45,7 @@ var buffRandReader *bufio.Reader
 // It initializes the regular expression patterns rxHexB, rxHex6, and rxHex3 with their corresponding regular expression strings.
 // It also initializes the htmlColorArray with the ColorNames map values, randomly filling the array.
 // This function does not return any value.
+/*
 func init() {
 
 	rxHexB = regexp.MustCompile(regExpHexB)
@@ -68,7 +69,7 @@ func init() {
 
 /************************** production version */
 
-/************************** maintenance version *
+/************************** maintenance version */
 
 func init() {
 	htmlColorArrayLength = big.NewInt(int64(len(ColorNames)))
@@ -97,7 +98,8 @@ func init() {
 		os.Exit(1)
 	}
 }
-*****************************/
+
+/*****************************/
 
 // StringToColor takes a string and converts it to a hexadecimal color value.
 // If the string matches a 6-digit hexadecimal pattern, it extracts the digits
