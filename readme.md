@@ -30,10 +30,15 @@ Prerequisites:
 * working GO compiler
 * `GOPATH` environment variable correctly set
 
-To install and compile:
- * `git clone github.com/onyx-tao/madcolor.git`
+### To compile and install:
+ * `git clone https://github.com/onyx-tao/madcolor.git`
  * `cd madcolor`
  * `go install madcolor`
+
+### To install:
+ * `go install https://github.com/onyx-tao/madcolor.git@latest`
+
+
 
 
 ## USAGE
@@ -80,6 +85,8 @@ will (and should) differ.
   * Not sure how to do this ... must research
 
 ## FLAGS
+Use the `--flag=false` to set a boolean flag to `false`; `--flag` sets
+the flag to `true`.
 
 #### -a, --anti
 Adds  background color for color (r, g, b) of (255-r, 255-g, 255-b),
@@ -117,7 +124,8 @@ present.
 Input file to read 
 
 #### -I, --invent
-Invent colors, with minimum contrast
+Randomly generate (invent) colors, with high minimum contrast with the background (or
+invented background)
 
 #### -o, --output
 Write output to a file instead of stdout

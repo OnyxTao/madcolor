@@ -103,13 +103,16 @@ var myFatalMutex sync.Mutex
 // thorough at-close routine and register closing the file
 // and log as part of the things to do 'at close'.
 func myFatal(rcList ...int) {
-
-	var rc = -1
-
+	var rc int = -1
 	myFatalMutex.Lock()
-	// we never release this lock, because the program
-	// is exiting for some error
+	// the app never releases this lock, because the
+	// app is exiting for an fatal error. Only one
+	// abnormal program termination at a time.
+	// any threads waiting on this lock are similarly
+	// in a fatal condition.
 
+	// default rc is -1, but that *might* be
+	// overridden by the caller
 	if len(rcList) > 0 {
 		rc = rcList[0]
 	}
@@ -131,16 +134,17 @@ func myFatal(rcList ...int) {
 	}
 	closeLog()
 	os.Exit(rc)
-
 }
 
 // safeLogPrintf may be called in lieu of xLog.Printf() if there
 // is a possibility the log may not be open. If the log is
 // available, well and good. Otherwise, print the message to
 // STDERR.
+var safeLogPrintfMutex sync.Mutex
+
 func safeLogPrintf(format string, a ...any) {
-	// clmx.Lock()
-	// defer clmx.Unlock()
+	safeLogPrintfMutex.Lock()
+	defer safeLogPrintfMutex.Unlock()
 	if nil != xLogBuffer && nil != xLogFile {
 		xLog.Printf(format, a...)
 	} else {

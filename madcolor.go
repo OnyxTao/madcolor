@@ -54,13 +54,15 @@ func main() {
 
 	initFlags()
 
+	misc.SetOptions(FlagDebug, FlagVerbose, &xLog, myFatal)
+
 	if !FlagInventColor && !nFlags.Changed("contrast") {
 		FlagContrast += 10
 	}
 
 	br := getInput()
-
 	f := getOutput()
+
 	defer misc.DeferError(f.Close)
 	writerList = append(writerList, f)
 

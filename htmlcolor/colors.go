@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 
 	"madcolor/misc"
 )
@@ -24,10 +25,15 @@ const regExpHexB = "[\\da-fA-F]{2}"
 const regExpHex6 = "#?([\\da-fA-F]{6})"
 
 // regExpHex3 match 3-digit hex value, submatch each 4-byte digit
-const regExpHex3 = "#?([\\da-fA-F])([\\da-fA-F])([\\da-fA-F])"
+const regExpHex3 = "#?([\\da-fA-F]{3})"
 
+// rxHexB: match 2-digit hex byte
 var rxHexB *regexp.Regexp
+
+// rxHex6: match 6-digit hex byte
 var rxHex6 *regexp.Regexp
+
+// rxHex3: match 3-digit hex byte
 var rxHex3 *regexp.Regexp
 
 type htmlColor struct {
@@ -39,37 +45,7 @@ var htmlColorArray []htmlColor
 
 // buffRandReader buffers the many small calls to
 // crypto/Rand.reader.
-var buffRandReader *bufio.Reader
-
-// init is a function that is automatically called before the main function at the start of program execution.
-// It initializes the regular expression patterns rxHexB, rxHex6, and rxHex3 with their corresponding regular expression strings.
-// It also initializes the htmlColorArray with the ColorNames map values, randomly filling the array.
-// This function does not return any value.
-/*
-func init() {
-
-	rxHexB = regexp.MustCompile(regExpHexB)
-	rxHex6 = regexp.MustCompile(regExpHex6)
-	rxHex3 = regexp.MustCompile(regExpHex3)
-	htmlColorArray = make([]htmlColor, 0, len(ColorNames))
-	invertArray := make(map[string]string, len(ColorNames))
-	buffRandReader = bufio.NewReaderSize(rand.Reader, 16*1024)
-
-	for key, val := range ColorNames {
-		_, ok := invertArray[val]
-		if ok { // ignore duplicate colors -- use maintenance init to detect them
-			continue
-		}
-		invertArray[val] = key
-		tmp := htmlColor{name: key, hex: val}
-		htmlColorArray = append(htmlColorArray, tmp)
-	}
-	htmlColorArrayLength = big.NewInt(int64(len(htmlColorArray)))
-}
-
-/************************** production version */
-
-/************************** maintenance version */
+var buffRandReader = bufio.NewReader(rand.Reader)
 
 func init() {
 	htmlColorArrayLength = big.NewInt(int64(len(ColorNames)))
@@ -78,24 +54,26 @@ func init() {
 	rxHex3 = regexp.MustCompile(regExpHex3)
 	htmlColorArray = make([]htmlColor, 0, len(ColorNames))
 	invertArray := make(map[string]string, len(ColorNames))
+	// buffRandReader = bufio.NewReader(rand.Reader)
 
-	terminate := false
+	var colorWait sync.WaitGroup
+	colorWait.Add(1)
+	colorChan := make(chan string, 32)
+	go misc.RecordString("", "duplicate_colors.txt", colorChan, colorWait.Done)
+	defer colorWait.Wait()
+	defer close(colorChan)
+
 	// this fills the array randomly. Doesn't matter for our purposes.
 	for key, val := range ColorNames {
 		dup, ok := invertArray[val]
 		if ok { // report & ignore duplicate colors
-			terminate = true
-			_, _ = fmt.Fprintf(os.Stderr,
-				"duplicate color hex %s has names %s and %s\n",
+			colorChan <- fmt.Sprintf("duplicate color hex %s has names %s and %s\n",
 				val, dup, key)
 			continue
 		}
 		invertArray[val] = key
 		tmp := htmlColor{name: key, hex: val}
 		htmlColorArray = append(htmlColorArray, tmp)
-	}
-	if terminate {
-		os.Exit(1)
 	}
 }
 
@@ -229,7 +207,12 @@ func RandColor() (color string) {
 
 func randColorBytes() (sum, r, g, b int) {
 	bits := make([]byte, 3)
-	_, _ = rand.Read(bits)
+	_, err := rand.Read(bits)
+	if err != nil {
+		msg := fmt.Sprintf("huh? could not generate random color because %s", err.Error())
+		_, _ = fmt.Fprintln(os.Stderr, msg)
+		panic(msg)
+	}
 	return int(bits[0] + bits[1] + bits[2]), int(bits[0]), int(bits[1]), int(bits[2])
 }
 
@@ -301,8 +284,11 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 		}
 	}
 
-	ixBig, _ := rand.Int(buffRandReader, htmlColorArrayLength)
-	ixStart := int(ixBig.Int64())
+	ixBig, err := rand.Int(buffRandReader, htmlColorArrayLength)
+	if err != nil {
+		panic("Huh? rand.Int read failed because: " + err.Error())
+	}
+	ixStart := int(ixBig.Int64()) % len(htmlColorArray)
 	ix := ixStart
 
 	fg := htmlColorArray[ixStart].hex

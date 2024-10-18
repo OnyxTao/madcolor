@@ -45,6 +45,7 @@ var FlagStdout bool
 var FlagPipe bool
 var FlagDistance int8 = 20
 var FlagClipboardBuffer bool
+var FlagImport = ""
 
 // initFlags initializes the command line flags for the program.
 // It sets up the flag set, defines the flags, and parses the command line arguments.
@@ -81,6 +82,9 @@ func initFlags() {
 
 	// program flags
 
+	nFlags.StringVarP(&FlagImport, "import", "", "",
+		"Import a file of colors as <<colorname=#FD01AB>> (not yet implemented)")
+
 	nFlags.Int8VarP(&FlagContrast, "contrast", "c", int8(minContrast),
 		"minimum relative contrast between foreground and background")
 
@@ -90,7 +94,7 @@ func initFlags() {
 	nFlags.StringVarP(&FlagBackgroundColor, "background-color", "b", "white",
 		"Background color. Ignored for --anti.")
 
-	nFlags.BoolVarP(&FlagClipboardBuffer, "buff", "", false,
+	nFlags.BoolVarP(&FlagClipboardBuffer, "buff", "", true,
 		"buffer mode -- convert text in the clipboard buffer")
 
 	nFlags.BoolVarP(&FlagPipe, "pipe", "p", false,
@@ -109,7 +113,7 @@ func initFlags() {
 			"or something random with minimum contrast (see --contrast)")
 
 	nFlags.BoolVarP(&FlagInventColor, "invent", "I", false,
-		"randomly generate colors (rather than randomly select websafe colors)")
+		"randomly generate colors (rather than randomly select known/named colors)")
 
 	nFlags.StringVarP(&FlagText, "text", "t",
 		DEFAULTCOLORTEXT, "Text to colorize")
@@ -132,13 +136,19 @@ func initFlags() {
 	// Fetch and load the program flags
 	err = nFlags.Parse(os.Args[1:])
 	if nil != err {
-		_, _ = fmt.Fprintf(os.Stderr, "\n%s\n", nFlags.FlagUsagesWrapped(75))
-		xLog.Fatalf("\nerror parsing flags because: %s\n%s %s\n%s\n\t%v\n",
+		_, _ = fmt.Fprintf(os.Stderr, "\n%s\n", nFlags.FlagUsagesWrapped(60))
+		xLog.Printf("\nerror parsing flags because: %s\n%s %s\n%s\n\t%v\n",
 			err.Error(),
 			"  common issue: 2 hyphens for long-form arguments,",
 			"  1 hyphen for short-form argument",
 			"  Program arguments are: ",
 			os.Args)
+		myFatal(-2)
+	}
+
+	if FlagClipboardBuffer && FlagPipe {
+		xLog.Println("--buff and --pipe are incompatible options.")
+		myFatal(-2)
 	}
 
 	if FlagClipboardBuffer {
@@ -226,9 +236,9 @@ func initFlags() {
 }
 
 // logFlag -- This writes out to the logger the value of a
-// particular flag. Called indirectly. `Write()` is used
-// directly to prevent wierd interactions with backslash
-// in filenames
+// particular flag. Called indirectly. `Write()` is called
+// directly to prevent escape interactions with backslash in
+// filenames. **** you, Bill, for having to be 'different'.
 func logFlag(flag *pflag.Flag) {
 	var sb strings.Builder
 	sb.WriteString(" flag ")
@@ -238,7 +248,12 @@ func logFlag(flag *pflag.Flag) {
 	sb.WriteString("] with default [")
 	sb.Write([]byte(flag.DefValue))
 	sb.WriteString("]\n")
-	_, _ = xLog.Writer().Write([]byte(sb.String()))
+	_, err := xLog.Writer().Write([]byte(sb.String()))
+	if nil != err {
+		xLog.Printf("Huh? Could not log flag %s because %s",
+			flag.Name, err.Error())
+		myFatal()
+	}
 }
 
 // UsageMessage prints useful information to the log
@@ -246,10 +261,10 @@ func logFlag(flag *pflag.Flag) {
 //
 //	UsageMessage()
 func UsageMessage() {
-	xLog.Printf("Useful Information Here")
+	xLog.Printf("Documentation in .MD file")
 }
 
-// flagSet sets the value of a flag in the given flag set.
+// flagSet sets the value of a flag in nFlags set.
 // If an error occurs while setting the flag value, it logs an error message
 // using the xLog package and calls the myFatal function.
 func flagSet(flag string, val string) {
