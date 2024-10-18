@@ -182,15 +182,15 @@ func debugMapStringString(params map[string]string) {
 	}
 }
 
-type NLVWriter struct {
+type OTWriter struct {
 	writer *bufio.Writer
 }
 
-func NewNLVWriter(b *bufio.Writer) (q *NLVWriter) {
-	a := NLVWriter{b}
+func NewOTWriter(b *bufio.Writer) (q *OTWriter) {
+	a := OTWriter{b}
 	return &a
 }
-func (w *NLVWriter) WriteString(s ...string) {
+func (w *OTWriter) WriteString(s ...string) {
 	for _, str := range s {
 		_, err := w.writer.WriteString(str)
 		if nil != err {
@@ -199,7 +199,7 @@ func (w *NLVWriter) WriteString(s ...string) {
 		}
 	}
 }
-func (w *NLVWriter) Write(s ...[]byte) {
+func (w *OTWriter) Write(s ...[]byte) {
 	for _, str := range s {
 		_, err := w.writer.Write(str)
 		if nil != err {
@@ -208,7 +208,7 @@ func (w *NLVWriter) Write(s ...[]byte) {
 		}
 	}
 }
-func (w *NLVWriter) WriteRune(s ...rune) {
+func (w *OTWriter) WriteRune(s ...rune) {
 	for _, str := range s {
 		_, err := w.writer.WriteRune(str)
 		if nil != err {

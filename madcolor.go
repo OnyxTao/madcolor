@@ -154,7 +154,7 @@ func getInput() (br *bufio.Reader) {
 // It then generates a foreground color that has enough contrast and distance
 // from the background color.
 // If FlagAntiColor is set, it generates a random background color for each character.
-// It writes the colorized text to the output using the NLVWriter type.
+// It writes the colorized text to the output using the OTWriter type.
 // It wraps the colorized text in `<div>` tags.
 //
 // Parameters:
@@ -173,7 +173,7 @@ func getInput() (br *bufio.Reader) {
 func colorize(in *bufio.Reader, out *bufio.Writer) {
 	var r rune
 	var err error = nil
-	var w = NewNLVWriter(out)
+	var w = NewOTWriter(out)
 	var fg, bg, colorName string
 
 	bg = FlagBackgroundColor
