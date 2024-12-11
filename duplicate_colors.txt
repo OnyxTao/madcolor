@@ -1,0 +1,226 @@
+duplicate color hex #f5fffa has names mint cream and mintcream
+
+duplicate color hex #ff4500 has names orangered and orange red
+
+duplicate color hex #ffdab9 has names peachpuff and peach puff
+
+duplicate color hex #9400d3 has names dark violet and darkviolet
+
+duplicate color hex #8fbc8f has names darkseagreen and dark sea green
+
+duplicate color hex #d3d3d3 has names light grey and lightgrey
+
+duplicate color hex #ffefd5 has names papaya whip and papayawhip
+
+duplicate color hex #20b2aa has names lightseagreen and light sea green
+
+duplicate color hex #696969 has names dim gray and dimgrey
+
+duplicate color hex #ee82ee has names violet2 and lavender magenta
+
+duplicate color hex #00bfff has names deep sky blue and deepskyblue
+
+duplicate color hex #d2691e has names autumn maple and chocolate
+
+duplicate color hex #e0ffff has names light cyan and lightcyan
+
+duplicate color hex #8a2be2 has names blueviolet and blue violet
+
+duplicate color hex #000080 has names navy and navy blue
+
+duplicate color hex #778899 has names light slate grey and light slate gray
+
+duplicate color hex #ffebcd has names blanchedalmond and blanched almond
+
+duplicate color hex #ff1493 has names deeppink and fluorescent pink
+
+duplicate color hex #deb887 has names burlywood and burly wood
+
+duplicate color hex #d3d3d3 has names light grey and light gray
+
+duplicate color hex #ffdead has names navajo white and navajowhite
+
+duplicate color hex #f0ffff has names azure and azure mist
+
+duplicate color hex #191970 has names midnightblue and midnight blue
+
+duplicate color hex #fff8dc has names corn silk and cornsilk
+
+duplicate color hex #00ced1 has names darkturquoise and dark turquoise
+
+duplicate color hex #fffaf0 has names floral white and floralwhite
+
+duplicate color hex #d3d3d3 has names light grey and lightgray
+
+duplicate color hex #2f4f4f has names darkslategray and darkslategrey
+
+duplicate color hex #6a5acd has names slateblue and slate blue
+
+duplicate color hex #c71585 has names medium violet red and red violet
+
+duplicate color hex #ffffe0 has names lightyellow and light yellow
+
+duplicate color hex #fff5ee has names sea shell and seashell
+
+duplicate color hex #6495ed has names cornflower blue and corn flower blue
+
+duplicate color hex #b0e0e6 has names powder blue and powderblue
+
+duplicate color hex #faebd7 has names moccasin and antiquewhite
+
+duplicate color hex #a9a9a9 has names dark gray and dark grey
+
+duplicate color hex #fffacd has names lemonchiffon and lemon chiffon
+
+duplicate color hex #556b2f has names dark olive green and darkolivegreen
+
+duplicate color hex #8b0000 has names dark red and darkred
+
+duplicate color hex #008b8b has names dark cyan and darkcyan
+
+duplicate color hex #0000cd has names medium blue and mediumblue
+
+duplicate color hex #708090 has names slategray and slate gray
+
+duplicate color hex #a9a9a9 has names dark gray and darkgray
+
+duplicate color hex #848482 has names old silver and battleship gray
+
+duplicate color hex #808080 has names grey and gray
+
+duplicate color hex #85bb65 has names dollar bill green and dollar bill
+
+duplicate color hex #cd5c5c has names indian red and indianred
+
+duplicate color hex #663399 has names rebecca purple and rebeccapurple
+
+duplicate color hex #faebd7 has names moccasin and antique white
+
+duplicate color hex #afeeee has names paleturquoise and pale turquoise
+
+duplicate color hex #fc6c85 has names wild watermelon and watermelon pink
+
+duplicate color hex #00008b has names darkblue and dark blue
+
+duplicate color hex #e9967a has names dark salmon and darksalmon
+
+duplicate color hex #c71585 has names medium violet red and mediumvioletred
+
+duplicate color hex #778899 has names light slate grey and lightslategrey
+
+duplicate color hex #00ffff has names aqua and cyan
+
+duplicate color hex #fdf5e6 has names oldlace and old lace
+
+duplicate color hex #ff69b4 has names hotpink and hot pink
+
+duplicate color hex #ff8c00 has names dark orange and darkorange
+
+duplicate color hex #8b4513 has names saddlebrown and saddle brown
+
+duplicate color hex #808080 has names grey and trolley grey
+
+duplicate color hex #4682b4 has names steel blue and steelblue
+
+duplicate color hex #6b8e23 has names olive drab and olivedrab
+
+duplicate color hex #eee8aa has names pale goldenrod and palegoldenrod
+
+duplicate color hex #1e90ff has names dodgerblue and dodger blue
+
+duplicate color hex #5f9ea0 has names cadetblue and cadet blue
+
+duplicate color hex #f8f8ff has names ghostwhite and ghost white
+
+duplicate color hex #008000 has names green and office green
+
+duplicate color hex #66cdaa has names medium aquamarine and mediumaquamarine
+
+duplicate color hex #f0fff0 has names honey dew and honeydew
+
+duplicate color hex #add8e6 has names lightblue and light blue
+
+duplicate color hex #708090 has names slategray and slategrey
+
+duplicate color hex #98fb98 has names palegreen and pale green
+
+duplicate color hex #ffb6c1 has names lightpink and light pink
+
+duplicate color hex #f08080 has names lightcoral and light coral
+
+duplicate color hex #a52a2a has names red brown and brown
+
+duplicate color hex #bc8f8f has names rosybrown and rosy brown
+
+duplicate color hex #e6e6fa has names lavender mist and lavender
+
+duplicate color hex #90ee90 has names lightgreen and light green
+
+duplicate color hex #8b008b has names darkmagenta and dark magenta
+
+duplicate color hex #d2691e has names autumn maple and cocoa brown
+
+duplicate color hex #483d8b has names dark slate blue and darkslateblue
+
+duplicate color hex #ffe4e1 has names mistyrose and misty rose
+
+duplicate color hex #b0c4de has names lightsteelblue and light steel blue1
+
+duplicate color hex #f4a460 has names sandybrown and sandy brown
+
+duplicate color hex #9dc209 has names limerick and pistachio green
+
+duplicate color hex #ff1493 has names deeppink and deep pink
+
+duplicate color hex #6495ed has names cornflower blue and cornflowerblue
+
+duplicate color hex #87ceeb has names skyblue and sky blue
+
+duplicate color hex #fafad2 has names lightgoldenrodyellow and light goldenrod yellow
+
+duplicate color hex #2f4f4f has names darkslategray and dark slate gray
+
+duplicate color hex #778899 has names light slate grey and lightslategray
+
+duplicate color hex #c19a6b has names wood brown and camel brown
+
+duplicate color hex #696969 has names dim gray and dimgray
+
+duplicate color hex #ff00ff has names magenta and fuchsia
+
+duplicate color hex #87cefa has names light sky blue and lightskyblue
+
+duplicate color hex #48d1cc has names medium turquoise and mediumturquoise
+
+duplicate color hex #696969 has names dim gray and dim grey
+
+duplicate color hex #f0ead6 has names sweet corn and eggshell
+
+duplicate color hex #00ffff has names aqua and electric cyan
+
+duplicate color hex #bdb76b has names dark khaki and darkkhaki
+
+duplicate color hex #b22222 has names fire brick and firebrick
+
+duplicate color hex #7b68ee has names medium slate blue and mediumslateblue
+
+duplicate color hex #6f4e37 has names tuscan brown and coffee
+
+duplicate color hex #db7093 has names pale violet red and palevioletred
+
+duplicate color hex #4169e1 has names royalblue and royal blue1
+
+duplicate color hex #f0f8ff has names aliceblue and alice blue
+
+duplicate color hex #ffa07a has names light salmon and lightsalmon
+
+duplicate color hex #708090 has names slategray and slate grey
+
+duplicate color hex #9370db has names medium purple and mediumpurple
+
+duplicate color hex #fff0f5 has names lavenderblush and lavender blush
+
+duplicate color hex #a9a9a9 has names dark gray and darkgrey
+
+duplicate color hex #f5f5f5 has names white smoke and whitesmoke
+
