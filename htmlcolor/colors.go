@@ -292,7 +292,7 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 		misc.LogPrintf("huh? rand.Int read failed because: %s", err.Error())
 		misc.Fatal()
 	case nil == ixBig:
-		misc.LogPrintf("huh? rand.Int read returned nil because: %s", err.Error())
+		misc.LogPrintf("huh? rand.Int read returned nil bigInt ptr?")
 		misc.Fatal()
 	default:
 		break
@@ -327,7 +327,7 @@ func RandNamedColor() (ix int, name, hex string) {
 		misc.LogPrintf("huh? rand.Int read failed because: %s", err.Error())
 		misc.Fatal()
 	case nil == ixBig:
-		misc.LogPrintf("huh? rand.Int read returned nil because: %s", err.Error())
+		misc.LogPrintf("rand.Int read returned nil bigInt ptr?")
 		misc.Fatal()
 	default:
 		break
