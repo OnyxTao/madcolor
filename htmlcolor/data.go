@@ -895,6 +895,7 @@ var ColorNames = map[string]string{
 	"moccasin1":                "#ffe4b5",
 	"moccasin2":                "#827839",
 	"mocha":                    "#493d26",
+	"mocha mousse":             "#A47764",
 	"moonstone blue":           "#73a9c2",
 	"mordant red 19":           "#ae0c00",
 	"moss green":               "#8a9a5b",

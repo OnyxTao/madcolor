@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -54,12 +53,11 @@ func init() {
 	rxHex3 = regexp.MustCompile(regExpHex3)
 	htmlColorArray = make([]htmlColor, 0, len(ColorNames))
 	invertArray := make(map[string]string, len(ColorNames))
-	// buffRandReader = bufio.NewReader(rand.Reader)
 
 	var colorWait sync.WaitGroup
 	colorWait.Add(1)
 	colorChan := make(chan string, 32)
-	go misc.RecordString("", "duplicate_colors.txt", colorChan, colorWait.Done)
+	go misc.RecordString("duplicate_colors.txt", colorChan, colorWait.Done)
 	defer colorWait.Wait()
 	defer close(colorChan)
 
@@ -209,25 +207,23 @@ func randColorBytes() (sum, r, g, b int) {
 	bits := make([]byte, 3)
 	_, err := rand.Read(bits)
 	if err != nil {
-		msg := fmt.Sprintf("huh? could not generate random color because %s", err.Error())
-		_, _ = fmt.Fprintln(os.Stderr, msg)
-		panic(msg)
+		misc.LogPrintf("huh? could not generate random color because %s", err.Error())
+		misc.Fatal(-1)
 	}
 	return int(bits[0] + bits[1] + bits[2]), int(bits[0]), int(bits[1]), int(bits[2])
 }
 
 func hexByteToInt(hex string) (val int) {
-
-	// paranoia check. can remove in 2025.
+	// paranoia check. can remove in 2026.
 	if !rxHexB.MatchString(hex) {
-		panic("hex byte conversion failed for " + hex)
+		misc.LogPrintf("huh? invalid hex byte: %s", hex)
+		misc.Fatal()
 	}
 
 	i, err := strconv.ParseInt(hex, 16, 32)
 	if err != nil {
-		msg := fmt.Sprintf("huh? could not convert %s into an int because %s", hex, err.Error())
-		_, _ = fmt.Fprintln(os.Stderr, msg)
-		panic(msg)
+		misc.LogPrintf("huh? could not convert %s into an int because %s", hex, err.Error())
+		misc.Fatal()
 	}
 	return int(i)
 }
@@ -240,6 +236,12 @@ func getRGB(hex string) (r, g, b int) {
 	if !rxHex6.MatchString(hex) {
 		panic("invalid hex format: [" + hex + "] (don't do that!)")
 	}
+	// rr := hex[1:3]
+	// gg := hex[3:5]
+	// bb := hex[5:7]
+	// r = hexByteToInt(hex[1:3])
+	// g = hexByteToInt(hex[3:5])
+	// b = hexByteToInt(hex[5:7])
 	return hexByteToInt(hex[1:3]), hexByteToInt(hex[3:5]), hexByteToInt(hex[5:7])
 }
 
@@ -286,7 +288,8 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 
 	ixBig, err := rand.Int(buffRandReader, htmlColorArrayLength)
 	if err != nil {
-		panic("Huh? rand.Int read failed because: " + err.Error())
+		misc.LogPrintf("huh? rand.Int read failed because: %s", err.Error())
+		misc.Fatal()
 	}
 	ixStart := int(ixBig.Int64()) % len(htmlColorArray)
 	ix := ixStart
@@ -313,10 +316,10 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 func RandNamedColor() (ix int, name, hex string) {
 	ixBig, err := rand.Int(buffRandReader, big.NewInt(int64(len(htmlColorArray))))
 	if nil != err {
-		msg := fmt.Sprintf(
+		misc.LogPrintf(
 			"huh? Failed to generate a big.Int from %d (len of ColorNames array) because %s",
 			len(ColorNames), err.Error())
-		panic(msg)
+		misc.Fatal()
 	}
 	ix = int(ixBig.Int64())
 	return ix, htmlColorArray[ix].name, htmlColorArray[ix].hex

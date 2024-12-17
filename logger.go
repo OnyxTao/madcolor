@@ -142,16 +142,17 @@ func myFatal(rcList ...int) {
 // STDERR.
 var safeLogPrintfMutex sync.Mutex
 
-func safeLogPrintf(format string, a ...any) {
+func safeLogPrintf(format string, a ...any) (int, error) {
 	safeLogPrintfMutex.Lock()
 	defer safeLogPrintfMutex.Unlock()
 	if nil != xLogBuffer && nil != xLogFile {
 		xLog.Printf(format, a...)
 	} else {
-		_, _ = fmt.Fprintf(os.Stderr,
+		return fmt.Fprintf(os.Stderr,
 			"\n\tSAFELOG\n"+format+"\n",
 			a...)
 	}
+	return 0, nil
 }
 
 // debugMapStringString is a function that takes a map of string keys and string values as input.

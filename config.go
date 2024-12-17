@@ -94,7 +94,7 @@ func initFlags() {
 	nFlags.StringVarP(&FlagBackgroundColor, "background-color", "b", "white",
 		"Background color. Ignored for --anti.")
 
-	nFlags.BoolVarP(&FlagClipboardBuffer, "buff", "", true,
+	nFlags.BoolVarP(&FlagClipboardBuffer, "buff", "", false,
 		"buffer mode -- convert text in the clipboard buffer")
 
 	nFlags.BoolVarP(&FlagPipe, "pipe", "p", false,

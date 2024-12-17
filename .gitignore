@@ -1,8 +1,6 @@
 /.
 /htmlcolor/
 /htmlcolor/htmlColors.go
-/misc/
-/misc/misc.go
 /.gitignore
 /config.go
 /filerw.go
@@ -13,3 +11,6 @@
 /madcolor.go
 /madcolor.log
 /readme.md
+!/misc/misc.go
+!/misc/miscError.go
+!/misc/miscOptions.go

@@ -54,7 +54,10 @@ func main() {
 
 	initFlags()
 
-	misc.SetOptions(FlagDebug, FlagVerbose, &xLog, myFatal)
+	misc.OptionDebug(FlagDebug)
+	misc.OptionVerbose(FlagVerbose)
+	misc.OptionFatal(myFatal)
+	misc.OptionPrintf(safeLogPrintf)
 
 	if !FlagInventColor && !nFlags.Changed("contrast") {
 		FlagContrast += 10
@@ -220,7 +223,7 @@ func colorize(in *bufio.Reader, out *bufio.Writer) {
 		w.WriteString(fg)
 
 		if FlagAntiColor {
-			w.WriteString("; padding: 0px 0px 1px 0px; background-color: ")
+			w.WriteString("; padding: 1px 0px 1px 0px; background-color: ")
 			w.WriteString(bg)
 		}
 
