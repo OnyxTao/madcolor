@@ -85,7 +85,7 @@ func RecordString(outFileName string, inTx <-chan string, wgDone func()) {
 		os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 
 	if nil != err {
-		logPrintf("Failed to open %s because %s\n",
+		_, _ = logPrintf("Failed to open %s because %s\n",
 			outFileName, err.Error())
 		fatal()
 	}
@@ -97,20 +97,20 @@ func RecordString(outFileName string, inTx <-chan string, wgDone func()) {
 	for val := range inTx {
 		_, err = bw.WriteString(val)
 		if nil != err {
-			logPrintf("failed to write string %s to file %s because %s\n",
+			_, _ = logPrintf("failed to write string %s to file %s because %s\n",
 				val, outFileName, err.Error())
 			fatal()
 		}
 		_, err = bw.WriteRune('\n')
 		if nil != err {
-			logPrintf("failed to write newline following string %s to file %s because %s\n",
+			_, _ = logPrintf("failed to write newline following string %s to file %s because %s\n",
 				val, outFileName, err.Error())
 			fatal()
 		}
 	}
 
 	if flagDebug {
-		logPrintf("Finished output to file %s\n", outFileName)
+		_, _ = logPrintf("Finished output to file %s\n", outFileName)
 	}
 
 	/***** deferred actions

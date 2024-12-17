@@ -287,10 +287,17 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 	}
 
 	ixBig, err := rand.Int(buffRandReader, htmlColorArrayLength)
-	if err != nil {
+	switch {
+	case err == nil:
 		misc.LogPrintf("huh? rand.Int read failed because: %s", err.Error())
 		misc.Fatal()
+	case nil == ixBig:
+		misc.LogPrintf("huh? rand.Int read returned nil because: %s", err.Error())
+		misc.Fatal()
+	default:
+		break
 	}
+
 	ixStart := int(ixBig.Int64()) % len(htmlColorArray)
 	ix := ixStart
 
@@ -315,11 +322,15 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 // using crypto/rand for good(?) random numbers ...
 func RandNamedColor() (ix int, name, hex string) {
 	ixBig, err := rand.Int(buffRandReader, big.NewInt(int64(len(htmlColorArray))))
-	if nil != err {
-		misc.LogPrintf(
-			"huh? Failed to generate a big.Int from %d (len of ColorNames array) because %s",
-			len(ColorNames), err.Error())
+	switch {
+	case err == nil:
+		misc.LogPrintf("huh? rand.Int read failed because: %s", err.Error())
 		misc.Fatal()
+	case nil == ixBig:
+		misc.LogPrintf("huh? rand.Int read returned nil because: %s", err.Error())
+		misc.Fatal()
+	default:
+		break
 	}
 	ix = int(ixBig.Int64())
 	return ix, htmlColorArray[ix].name, htmlColorArray[ix].hex

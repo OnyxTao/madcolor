@@ -53,7 +53,7 @@ func closeLog() {
 	closeLogMutex.Unlock()
 
 	if nil != err {
-		safeLogPrintf(err.Error())
+		_, _ = safeLogPrintf(err.Error())
 	}
 }
 
@@ -70,7 +70,7 @@ func initLog(lfName string) {
 	var logWriters = make([]io.Writer, 0, 2)
 	xLogFile, err = os.OpenFile(lfName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if nil != err {
-		safeLogPrintf("error opening log file %s because %s",
+		_, _ = safeLogPrintf("error opening log file %s because %s",
 			lfName, err.Error())
 	}
 
@@ -82,7 +82,7 @@ func initLog(lfName string) {
 
 	// logPath, err := filepath.Abs(xLogFile.Name())
 	if nil != err {
-		safeLogPrintf("huh? could not resolve logfilename %s because %s",
+		_, _ = safeLogPrintf("huh? could not resolve logfilename %s because %s",
 			xLogFile.Name(), err.Error())
 		myFatal()
 	}
@@ -123,11 +123,11 @@ func myFatal(rcList ...int) {
 		_, srcFile, srcLine, ok := runtime.Caller(1)
 		if ok {
 			srcFile = filepath.Base(srcFile)
-			safeLogPrintf("\n\t\t/*** myFatal called ***/\n"+
+			_, _ = safeLogPrintf("\n\t\t/*** myFatal called ***/\n"+
 				"\tfrom file:line %12s:%04d\n"+
 				"\t\t/*** myFatal ended ***/", srcFile, srcLine)
 		} else {
-			safeLogPrintf("\n\t\t/*** myFatal called ***/\n" +
+			_, _ = safeLogPrintf("\n\t\t/*** myFatal called ***/\n" +
 				"\tbut could not get stack information for caller\n" +
 				"\t\t/*** myFatal ended ***/")
 		}
