@@ -141,7 +141,7 @@ in the clipboard.
 
 #### -q, --quiet
 By default, debug / verbose output goes to both stderr and the logfile;
-this flag suppresses output to logfile.
+this flag suppresses output to stderr. Output to logfile is **not** suppressed.
 
 #### --stdout
 Always send output to stdout, even when writing to a file.
