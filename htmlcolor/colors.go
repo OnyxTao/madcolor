@@ -288,7 +288,7 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 
 	ixBig, err := rand.Int(buffRandReader, htmlColorArrayLength)
 	switch {
-	case err == nil:
+	case err != nil:
 		misc.LogPrintf("huh? rand.Int read failed because: %s", err.Error())
 		misc.Fatal()
 	case nil == ixBig:
@@ -323,7 +323,7 @@ func RandomColor(bg string, contrast int, distance int) (name string, hex string
 func RandNamedColor() (ix int, name, hex string) {
 	ixBig, err := rand.Int(buffRandReader, big.NewInt(int64(len(htmlColorArray))))
 	switch {
-	case err == nil:
+	case err != nil:
 		misc.LogPrintf("huh? rand.Int read failed because: %s", err.Error())
 		misc.Fatal()
 	case nil == ixBig:
