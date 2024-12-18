@@ -45,7 +45,10 @@ Prerequisites:
 
 ## USAGE
 <span style="font-family: monospace;">
-> madcolor --invent --anti --text "Randomly color a string"</span>
+> madcolor --invent --anti --text "Randomly color a string"</span><br/>
+
+<span style="font-family: monospace;">
+> madcolor --invent --text "Randomly color a string"</span>
 
 
 ## OUTPUT
@@ -59,6 +62,9 @@ will (and should) differ.
 tyle="color: #b9e102; padding: 1px 0px 1px 0px; background-color: #f306e5;">r</span><span style="color: #5907d0; padding: 1px 0px 1px 0px; background-color: #22ae14;"> </span><span style="color: #0ae1f2; padding: 1px 0px 1px 0px; background-color: #a9131f;">a</span><span style="color: #f7f50c; padd
 ing: 1px 0px 1px 0px; background-color: #4040bb;"> </span><span style="color: #daf42a; padding: 1px 0px 1px 0px; background-color: #f302ca;">s</span><span style="color: #FFFFFF; padding: 1px 0px 1px 0px; background-color: #985b98;">t</span><span style="color: #2929f5; padding: 1px 0px 1px 0px; back
 ground-color: #5ad309;">r</span><span style="color: #091004; padding: 1px 0px 1px 0px; background-color: #f8425f;">i</span><span style="color: #470bec; padding: 1px 0px 1px 0px; background-color: #f29870;">n</span><span style="color: #cf8cf2; padding: 1px 0px 1px 0px; background-color: #420b30;">g</span></span>
+</blockquote>
+<blockquote style="font-size: 400%;">
+<span><span style="color: #1258ee;">R</span><span style="color: #7c1fa8;">a</span><span style="color: #15876a;">n</span><span style="color: #0c4ed0;">d</span><span style="color: #1b647f;">o</span><span style="color: #2e74cc;">m</span><span style="color: #243564;">l</span><span style="color: #5e1ebe;">y</span><span style="color: #414698;"> </span><span style="color: #8d0440;">c</span><span style="color: #3a33d9;">o</span><span style="color: #3e421d;">l</span><span style="color: #3507bd;">o</span><span style="color: #be250e;">r</span><span style="color: #570625;"> </span><span style="color: #565223;">a</span><span style="color: #717c14;"> </span><span style="color: #9a7843;">s</span><span style="color: #244d2e;">t</span><span style="color: #47322c;">r</span><span style="color: #402f76;">i</span><span style="color: #c51b03;">n</span><span style="color: #2f7c40;">g</span></span>
 
 </blockquote>
 
@@ -75,7 +81,7 @@ ground-color: #5ad309;">r</span><span style="color: #091004; padding: 1px 0px 1p
 * ~~Select darkness / brightness levels?~~
   * Done, see `--max` and `--min`
 * Add more colors?
-  * Added PANTONE color-of-year colors 2000&ndash;2024
+  * Added PANTONE color-of-year colors 2000&ndash;2025
 * ~~Generate random HTML colors?~~
   * Done see `--invent` flag
 * Return properly capitalized color names?
@@ -86,10 +92,8 @@ ground-color: #5ad309;">r</span><span style="color: #091004; padding: 1px 0px 1p
 * Add usage() directions
 * Create an external color list option?
   * Check for madcolor.csv?
-* force color of whitespace (default white)?
-  * TODO as `--whitespace <string>` where string matches a hex color identifier or name`
-    * Hex color identifier: `#[a-fA-F0-9]{6}` (don't bother with three-hex-digit colors)
-    * color name: "aliceblue", case ignored
+* ~~Set whitespace (background) color~~
+  * Done (see `--background-color`)
 * ~~copy to clipboard~~
   * Done `--nopaste` will disable
 * ~~Suppress output to stdout if writing to a file or clipboard~~
@@ -154,12 +158,15 @@ in the clipboard.
 
 #### -q, --quiet
 By default, debug / verbose output goes to both stderr and the logfile;
-this flag suppresses output to stderr. Output to logfile is **not** suppressed.
+this flag suppresses output to stderr. Output to logfile is **not** 
+suppressed. This prevents diagnostic / verbose messages from display
+during normal use.
 
 #### --stdout
 Always send output to stdout, even when writing to a file.
 
 #### -t, --text 
-Supply a string to decorate. Otherwise, the default string is decorated and returned.
+Supply a string to decorate. Otherwise, the default string ("Hassenpfeffer!")
+is decorated and returned.
 
 
