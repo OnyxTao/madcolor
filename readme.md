@@ -1,8 +1,5 @@
 # ATTENTION
 
-## Currently Broken
-Too many changes in too little time. Fixing everything (sorry)
-
 # MADCOLOR
 
 Set each glyph in a text string with a randomly selected color with a luminance comparison against the background (default assumption is a white background). Writes a &lt;span&gt; with the colorized text to STDOUT and to the system clipboard (if supported) by default.
@@ -47,13 +44,22 @@ Prerequisites:
 
 
 ## USAGE
-madcolor --text "randomly color a string"
+<span style="font-family: monospace;">
+> madcolor --invent --anti --text "Randomly color a string"</span>
+
 
 ## OUTPUT
 This is example output from one run. Since colors are created/assigned randomly, each run
 will (and should) differ.
-<blockquote>
-<span><span style="color: #f2451a;">W</span><span style="color: #4d7a48;">e</span><span style="color: #cc2b3a;"> </span><span style="color: #4255d8;">p</span><span style="color: #402c86;">r</span><span style="color: #2284e8;">o</span><span style="color: #970e3a;">m</span><span style="color: #a9422c;">p</span><span style="color: #1a7970;">t</span><span style="color: #69692e;">l</span><span style="color: #4c8a3f;">y</span><span style="color: #ed1b64;"> </span><span style="color: #400112;">j</span><span style="color: #3f5400;">u</span><span style="color: #1717e4;">d</span><span style="color: #ed0b85;">g</span><span style="color: #dd4b21;">e</span><span style="color: #17163f;">d</span><span style="color: #33088d;"> </span><span style="color: #653a87;">a</span><span style="color: #170bd7;">n</span><span style="color: #f71e55;">t</span><span style="color: #8b1b5c;">i</span><span style="color: #1f564d;">q</span><span style="color: #ca4a3b;">u</span><span style="color: #b2104e;">e</span><span style="color: #581ae6;"> </span><span style="color: #ee2566;">i</span><span style="color: #293655;">v</span><span style="color: #427e13;">o</span><span style="color: #421d89;">r</span><span style="color: #9a0895;">y</span><span style="color: #a30362;"> </span><span style="color: #f82b5b;">b</span><span style="color: #4839c5;">u</span><span style="color: #54776b;">c</span><span style="color: #4b342b;">k</span><span style="color: #62307a;">l</span><span style="color: #d3155d;">e</span><span style="color: #4865aa;">s</span><span style="color: #b61a01;"> </span><span style="color: #6231d0;">f</span><span style="color: #ae1625;">o</span><span style="color: #40239d;">r</span><span style="color: #c3475b;"> </span><span style="color: #3b8967;">t</span><span style="color: #0b5353;">h</span><span style="color: #513564;">e</span><span style="color: #af13b4;"> </span><span style="color: #04988a;">n</span><span style="color: #313ac4;">e</span><span style="color: #c311a6;">x</span><span style="color: #1f6d0a;">t</span><span style="color: #2f13d7;"> </span><span style="color: #781507;">p</span><span style="color: #2a17b1;">r</span><span style="color: #910883;">i</span><span style="color: #da306d;">z</span><span style="color: #15853a;">e</span><span style="color: #1158c2;"> </span><span style="color: #c03e41;">!</span><span style="color: #5b4297;">@</span><span style="color: #096d85;">#</span><span style="color: #fe2b48;">$</span><span style="color: #353864;">%</span><span style="color: #075c4e;">^</span><span style="color: #437265;">*</span><span style="color: #82460a;">(</span><span style="color: #5020d8;">)</span><span style="color: #df0e2b;">{</span><span style="color: #901e8c;">}</span><span style="color: #3a247d;">[</span><span style="color: #7913e9;">]</span><span style="color: #3f593e;">;</span><span style="color: #65202c;">:</span><span style="color: #690771;">.</span><span style="color: #021f5f;">,</span><span style="color: #3f14d7;">?</span></span>
+<blockquote style="font-size: 400%;">
+<span><span style="color: #7903e0; padding: 1px 0px 1px 0px; background-color: #62900d;">R</span><span style="color: #9e04ce; padding: 1px 0px 1px 0px; background-color: #13a93d;">a</span><span style="color: #52f7ce; padding: 1px 0px 1px 0px; background-color: #481732;">n</span><span style="color: 
+#e1f63c; padding: 1px 0px 1px 0px; background-color: #e71acb;">d</span><span style="color: #422ee4; padding: 1px 0px 1px 0px; background-color: #66e507;">o</span><span style="color: #d5f918; padding: 1px 0px 1px 0px; background-color: #e11ca4;">m</span><span style="color: #34ff82; padding: 1px 0px 
+1px 0px; background-color: #c01267;">l</span><span style="color: #f2ef44; padding: 1px 0px 1px 0px; background-color: #874ef3;">y</span><span style="color: #d7feaa; padding: 1px 0px 1px 0px; background-color: #3c3b0c;"> </span><span style="color: #02c1f6; padding: 1px 0px 1px 0px; background-color:
+ #204811;">c</span><span style="color: #09097c; padding: 1px 0px 1px 0px; background-color: #dd921c;">o</span><span style="color: #2efbf3; padding: 1px 0px 1px 0px; background-color: #d410d1;">l</span><span style="color: #FFFFFF; padding: 1px 0px 1px 0px; background-color: #1688ca;">o</span><span s
+tyle="color: #b9e102; padding: 1px 0px 1px 0px; background-color: #f306e5;">r</span><span style="color: #5907d0; padding: 1px 0px 1px 0px; background-color: #22ae14;"> </span><span style="color: #0ae1f2; padding: 1px 0px 1px 0px; background-color: #a9131f;">a</span><span style="color: #f7f50c; padd
+ing: 1px 0px 1px 0px; background-color: #4040bb;"> </span><span style="color: #daf42a; padding: 1px 0px 1px 0px; background-color: #f302ca;">s</span><span style="color: #FFFFFF; padding: 1px 0px 1px 0px; background-color: #985b98;">t</span><span style="color: #2929f5; padding: 1px 0px 1px 0px; back
+ground-color: #5ad309;">r</span><span style="color: #091004; padding: 1px 0px 1px 0px; background-color: #f8425f;">i</span><span style="color: #470bec; padding: 1px 0px 1px 0px; background-color: #f29870;">n</span><span style="color: #cf8cf2; padding: 1px 0px 1px 0px; background-color: #420b30;">g</span></span>
+
 </blockquote>
 
 
